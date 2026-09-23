@@ -454,12 +454,15 @@ elif page == "Analytics":
     fig3.update_layout(height=520, paper_bgcolor="white",
         font=dict(family="Inter",size=12,color="#334155"),
         scene=dict(
-            xaxis=dict(title="Rank",backgroundcolor="#F7F9FC",gridcolor="#D9E2EF",
-                       tickfont=dict(color="#334155"),titlefont=dict(color="#334155")),
-            yaxis=dict(title="Avg Fare (Rs)",backgroundcolor="#F7F9FC",gridcolor="#D9E2EF",
-                       tickfont=dict(color="#334155"),titlefont=dict(color="#334155")),
-            zaxis=dict(title="Observations",backgroundcolor="#F7F9FC",gridcolor="#D9E2EF",
-                       tickfont=dict(color="#334155"),titlefont=dict(color="#334155")),
+            xaxis=dict(title=dict(text="Rank", font=dict(color="#334155")),
+                       backgroundcolor="#F7F9FC", gridcolor="#D9E2EF",
+                       tickfont=dict(color="#334155")),
+            yaxis=dict(title=dict(text="Avg Fare (Rs)", font=dict(color="#334155")),
+                       backgroundcolor="#F7F9FC", gridcolor="#D9E2EF",
+                       tickfont=dict(color="#334155")),
+            zaxis=dict(title=dict(text="Observations", font=dict(color="#334155")),
+                       backgroundcolor="#F7F9FC", gridcolor="#D9E2EF",
+                       tickfont=dict(color="#334155")),
             camera=dict(eye=dict(x=1.55,y=1.45,z=1.15))),
         margin=dict(l=0,r=0,t=20,b=0))
     st.plotly_chart(fig3, use_container_width=True, theme=None)
