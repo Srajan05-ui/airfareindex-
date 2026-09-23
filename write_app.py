@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 """
+This script writes a clean UTF-8 app.py for Streamlit Cloud deployment.
+Run: python write_app.py
+"""
+APP_CODE = """\
+# -*- coding: utf-8 -*-
+\"\"\"
 AirPrice India -- Cloud Demo Dashboard
 Self-contained Streamlit app (Streamlit Community Cloud ready).
 Works with built-in demo data when no DATABASE_URL is configured.
 Run locally: streamlit run app.py
-"""
+\"\"\"
 from __future__ import annotations
 import os
 import numpy as np
@@ -127,7 +133,7 @@ def airline_stats(df):
     return s.sort_values("Observations", ascending=False)
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
-st.markdown(f"""
+st.markdown(f\"\"\"
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 *, body {{ font-family: 'Inter', sans-serif !important; }}
@@ -164,43 +170,43 @@ section[data-testid="stSidebar"] * {{ color: white !important; }}
     border-left: 4px solid {C['gold']}; padding-left: .75rem; margin: 1.5rem 0 .75rem;
 }}
 </style>
-""", unsafe_allow_html=True)
+\"\"\", unsafe_allow_html=True)
 
 # ── Sidebar ────────────────────────────────────────────────────────────────────
-st.sidebar.markdown("""
+st.sidebar.markdown(\"\"\"
 <div style='text-align:center;padding:1rem 0;'>
 <div style='font-size:2.5rem;'>IN</div>
 <div style='font-size:1.2rem;font-weight:700;'>AirPrice India</div>
 <div style='font-size:.8rem;opacity:.8;'>National Airfare Monitor</div>
-</div>""", unsafe_allow_html=True)
+</div>\"\"\", unsafe_allow_html=True)
 
 page = st.sidebar.radio("Navigation", [
     "Overview", "Airlines", "Routes & CPI", "Analytics", "Anomalies", "Forecast",
 ])
 st.sidebar.markdown("---")
-st.sidebar.markdown(f"""
+st.sidebar.markdown(f\"\"\"
 <div style='font-size:.8rem;opacity:.75;'>
 <b>Data:</b> {'DEMO Mode' if is_demo else 'Live DB'}<br>
 <b>Observations:</b> {len(fares_df):,}<br>
 <b>Routes:</b> {fares_df['route'].nunique() if not fares_df.empty else 0}<br>
 <b>Updated:</b> {datetime.now().strftime('%H:%M IST')}
-</div>""", unsafe_allow_html=True)
+</div>\"\"\", unsafe_allow_html=True)
 
 if is_demo:
-    st.markdown("""
+    st.markdown(\"\"\"
     <div class="demo-banner">
     [DEMO MODE] Showing synthetic sample data.
     Connect a live DATABASE_URL in Streamlit secrets for real fare data.
-    </div>""", unsafe_allow_html=True)
+    </div>\"\"\", unsafe_allow_html=True)
 
 # ── OVERVIEW ──────────────────────────────────────────────────────────────────
 if page == "Overview":
-    st.markdown(f"""
+    st.markdown(f\"\"\"
     <div class="main-header">
     <h1>India AirPrice India -- National Airfare Monitoring System</h1>
     <p>Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
     <span class="badge">SIH26056 - REAL-TIME SURVEILLANCE</span>
-    </div>""", unsafe_allow_html=True)
+    </div>\"\"\", unsafe_allow_html=True)
 
     latest_idx = (index_df.sort_values("computed_at_ist")
                   .groupby(["origin","destination"]).tail(1)
@@ -280,14 +286,14 @@ if page == "Overview":
             cpi = float(row["index_value"])
             clr = (C["red"] if cpi>110 else C["orange"] if cpi>105
                    else C["green"] if cpi<95 else C["blue"])
-            st.markdown(f"""
+            st.markdown(f\"\"\"
             <div style='background:white;border-radius:8px;padding:.7rem 1rem;
                         margin-bottom:.5rem;border-left:4px solid {clr};
                         box-shadow:0 2px 8px rgba(0,0,0,.07);'>
             <div style='font-weight:600;font-size:.9rem;color:#1a1a2e;'>
                 {row['origin']} to {row['destination']}</div>
             <div style='font-size:1.2rem;font-weight:700;color:{clr};'>{cpi:.1f}</div>
-            </div>""", unsafe_allow_html=True)
+            </div>\"\"\", unsafe_allow_html=True)
 
 # ── AIRLINES ──────────────────────────────────────────────────────────────────
 elif page == "Airlines":
@@ -494,7 +500,7 @@ elif page == "Anomalies":
         st.metric("Anomalies Detected", len(anoms))
         for a in sorted(anoms, key=lambda x: -x["Z"]):
             clr = C["red"] if a["Type"]=="SPIKE" else C["green"]
-            st.markdown(f"""
+            st.markdown(f\"\"\"
             <div style='background:white;border-left:5px solid {clr};border-radius:10px;
                         padding:1rem 1.2rem;margin-bottom:.8rem;
                         box-shadow:0 3px 10px rgba(0,0,0,.08);'>
@@ -506,7 +512,7 @@ elif page == "Anomalies":
                 Expected Rs{a['Expected']:,} |
                 Deviation <b style='color:{clr};'>{a['Dev%']:+.1f}%</b> |
                 Z-score {a['Z']} | {a['Airline']}
-            </div></div>""", unsafe_allow_html=True)
+            </div></div>\"\"\", unsafe_allow_html=True)
 
 # ── FORECAST ──────────────────────────────────────────────────────────────────
 elif page == "Forecast":
@@ -560,9 +566,19 @@ elif page == "Forecast":
         }), hide_index=True, use_container_width=True)
 
 st.markdown("---")
-st.markdown(f"""
+st.markdown(f\"\"\"
 <div style='text-align:center;color:#5D6D7E;font-size:.8rem;'>
 AirPrice India | SIH26056 | Ministry of Civil Aviation |
 {'DEMO Data' if is_demo else 'Live Data'} |
 {datetime.now().strftime('%Y-%m-%d %H:%M IST')}
-</div>""", unsafe_allow_html=True)
+</div>\"\"\", unsafe_allow_html=True)
+"""
+
+with open("app.py", "w", encoding="utf-8", newline="\n") as f:
+    f.write(APP_CODE)
+
+# verify it reads back clean
+with open("app.py", "r", encoding="utf-8") as f:
+    content = f.read()
+print(f"Written {len(content)} chars, UTF-8 OK")
+print("First line:", content.split("\n")[0])
