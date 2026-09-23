@@ -137,10 +137,13 @@ st.markdown(f"""
 html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
 .main-header {{
     background: linear-gradient(135deg, {C['navy']} 0%, {C['blue']} 60%, {C['teal']} 100%);
-    color: white; padding: 2.5rem 2rem; border-radius: 16px; margin-bottom: 1.5rem;
+    color: white; padding: 2rem 2rem; border-radius: 16px; margin-bottom: 2rem;
     box-shadow: 0 8px 32px rgba(0,51,102,0.3);
+    display: flex; align-items: center; gap: 1.5rem;
 }}
-.main-header h1 {{ font-size: 2rem; font-weight: 700; margin: 0; }}
+.main-header img {{ width: 80px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }}
+.main-header h1 {{ font-size: 2.2rem; font-weight: 700; margin: 0; line-height: 1.2; }}
+.main-header p {{ margin: 0.4rem 0 0 0; opacity: 0.9; font-size: 1.1rem; }}
 .badge {{
     background: {C['gold']}; color: {C['navy']};
     padding: .3rem 1rem; border-radius: 20px;
@@ -152,12 +155,13 @@ html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
     font-weight: 600; margin-bottom: 1rem; text-align: center;
 }}
 .kpi {{
-    background: white; border-radius: 12px; padding: 1.4rem;
-    text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,.08);
-    border-top: 4px solid {C['blue']};
+    background: white; border-radius: 12px; padding: 1.8rem 1rem;
+    text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    border-top: 5px solid {C['blue']}; transition: transform 0.2s;
 }}
-.kpi-val {{ font-size: 2rem; font-weight: 700; color: {C['navy']}; }}
-.kpi-lbl {{ font-size: .85rem; color: {C['gray']}; font-weight: 500; margin-top: .3rem; }}
+.kpi:hover {{ transform: translateY(-5px); }}
+.kpi-val {{ font-size: 2.4rem; font-weight: 700; color: {C['navy']}; line-height: 1; }}
+.kpi-lbl {{ font-size: 1rem; color: {C['gray']}; font-weight: 600; margin-top: .5rem; text-transform: uppercase; letter-spacing: 0.5px; }}
 section[data-testid="stSidebar"] {{
     background: linear-gradient(180deg, {C['navy']} 0%, #1a3a5c 100%);
     border-right: 3px solid {C['gold']};
@@ -172,10 +176,10 @@ section[data-testid="stSidebar"] * {{ color: white !important; }}
 
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 st.sidebar.markdown("""
-<div style='text-align:center;padding:1rem 0;'>
-<div style='font-size:2.5rem;'>IN</div>
-<div style='font-size:1.2rem;font-weight:700;'>AirPrice India</div>
-<div style='font-size:.8rem;opacity:.8;'>National Airfare Monitor</div>
+<div style='text-align:center;padding:1rem 0 2rem 0;'>
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" width="90" style="margin-bottom: 1rem;" />
+<div style='font-size:1.6rem;font-weight:800;letter-spacing:1px;'>AirPrice India</div>
+<div style='font-size:.9rem;opacity:.8;font-weight:500;text-transform:uppercase;'>National Airfare Monitor</div>
 </div>""", unsafe_allow_html=True)
 
 page = st.sidebar.radio("Navigation", [
@@ -194,9 +198,12 @@ st.sidebar.markdown(f"""
 if page == "Overview":
     st.markdown(f"""
     <div class="main-header">
-    <h1>India AirPrice India -- National Airfare Monitoring System</h1>
-    <p>Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
-    <span class="badge">SIH26056 - REAL-TIME SURVEILLANCE</span>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Gov Logo" />
+        <div>
+            <h1>AirPrice India -- National Airfare Monitoring System</h1>
+            <p>Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
+            <span class="badge">SIH26056 - REAL-TIME SURVEILLANCE</span>
+        </div>
     </div>""", unsafe_allow_html=True)
 
     latest_idx = (index_df.sort_values("computed_at_ist")
@@ -308,27 +315,27 @@ elif page == "Airlines":
                         colorscale=[[0,C["green"]],[.5,C["gold"]],[1,C["red"]]],
                         line=dict(color=C["navy"],width=1.5)),
             text=stats["Avg Fare (Rs)"].apply(lambda x: f"Rs{x:,.0f}"),
-            textposition="outside", textfont=dict(color="#0F172A", size=12),
+            textposition="outside", textfont=dict(color="#0F172A", size=14, weight="bold"),
             hovertemplate="<b>%{x}</b><br>Rs%{y:,.0f}<extra></extra>"))
-        fig.update_layout(height=380, template="plotly_white",
+        fig.update_layout(height=420, template="plotly_white",
             plot_bgcolor="white", paper_bgcolor="white", showlegend=False,
-            font=dict(family="Inter", size=12, color="#334155"),
-            title=dict(text="Airline Fare Ranking", font=dict(color="#003366", size=15)),
-            xaxis=dict(tickfont=dict(color="#334155"),
-                       title=dict(text="Airline", font=dict(color="#334155"))),
-            yaxis=dict(tickfont=dict(color="#334155"),
-                       title=dict(text="Avg Fare (Rs)", font=dict(color="#334155"))))
+            font=dict(family="Inter", size=14, color="#334155"),
+            title=dict(text="Airline Fare Ranking", font=dict(color="#003366", size=18, weight="bold")),
+            xaxis=dict(tickfont=dict(color="#334155", size=13),
+                       title=dict(text="Airline", font=dict(color="#334155", size=14, weight="bold"))),
+            yaxis=dict(tickfont=dict(color="#334155", size=13),
+                       title=dict(text="Avg Fare (Rs)", font=dict(color="#334155", size=14, weight="bold"))))
         st.plotly_chart(fig, use_container_width=True, theme=None)
     with c2:
         st.markdown('<div class="sec">Market Share by Volume</div>', unsafe_allow_html=True)
         fig2 = go.Figure(go.Pie(
             labels=stats["Airline"], values=stats["Observations"], hole=.4,
-            pull=[.05]+[0]*(len(stats)-1), textfont=dict(size=12, color="#1a1a2e"),
+            pull=[.05]+[0]*(len(stats)-1), textfont=dict(size=14, color="#1a1a2e", weight="bold"),
             hovertemplate="<b>%{label}</b><br>%{value:,} obs<br>%{percent}<extra></extra>"))
-        fig2.update_layout(height=380, paper_bgcolor="white",
-            title=dict(text="Observation Volume Share", font=dict(color="#003366", size=15)),
-            font=dict(family="Inter", size=12, color="#334155"),
-            legend=dict(font=dict(color="#334155")))
+        fig2.update_layout(height=420, paper_bgcolor="white",
+            title=dict(text="Observation Volume Share", font=dict(color="#003366", size=18, weight="bold")),
+            font=dict(family="Inter", size=14, color="#334155"),
+            legend=dict(font=dict(color="#334155", size=13)))
         st.plotly_chart(fig2, use_container_width=True, theme=None)
     st.markdown('<div class="sec">Detailed Statistics</div>', unsafe_allow_html=True)
     st.dataframe(stats, use_container_width=True, hide_index=True)
@@ -353,18 +360,18 @@ elif page == "Routes & CPI":
             y=si["route"], x=si["index_value"], orientation="h",
             marker=dict(color=clrs, line=dict(color="white",width=1.5)),
             text=si["index_value"].apply(lambda x: f"{x:.1f}"),
-            textposition="outside", textfont=dict(color="#0F172A", size=12),
+            textposition="outside", textfont=dict(color="#0F172A", size=13, weight="bold"),
             hovertemplate="<b>%{y}</b><br>CPI: %{x:.2f}<extra></extra>"))
         fig.add_vline(x=100, line_dash="solid", line_width=2, line_color="#5D6D7E",
                       annotation_text="Base 100", annotation_font_color="#5D6D7E")
-        fig.update_layout(height=480, template="plotly_white",
+        fig.update_layout(height=520, template="plotly_white",
             plot_bgcolor="white", paper_bgcolor="white",
-            font=dict(family="Inter", size=12, color="#334155"),
-            title=dict(text="Route CPI Index", font=dict(color="#003366", size=15)),
-            xaxis=dict(title=dict(text="CPI", font=dict(color="#334155")),
-                       tickfont=dict(color="#334155")),
-            yaxis=dict(tickfont=dict(color="#334155"),
-                       title=dict(text="Route", font=dict(color="#334155"))),
+            font=dict(family="Inter", size=14, color="#334155"),
+            title=dict(text="Route CPI Index", font=dict(color="#003366", size=18, weight="bold")),
+            xaxis=dict(title=dict(text="CPI", font=dict(color="#334155", size=14, weight="bold")),
+                       tickfont=dict(color="#334155", size=13)),
+            yaxis=dict(tickfont=dict(color="#334155", size=13),
+                       title=dict(text="Route", font=dict(color="#334155", size=14, weight="bold"))),
             margin=dict(l=130, r=60, t=60, b=60))
         st.plotly_chart(fig, use_container_width=True, theme=None)
     with c2:
@@ -380,14 +387,14 @@ elif page == "Routes & CPI":
                 x=agg["Date"], y=agg["Avg Fare"], mode="lines+markers",
                 line=dict(color=C["blue"],width=2.5),
                 hovertemplate="%{x}<br>Rs%{y:,.0f}<extra></extra>"))
-            fig2.update_layout(height=480, template="plotly_white",
+            fig2.update_layout(height=520, template="plotly_white",
                 plot_bgcolor="white", paper_bgcolor="white",
-                font=dict(family="Inter", size=12, color="#334155"),
-                title=dict(text=f"Avg Fare -- {sel}", font=dict(color="#003366",size=14)),
-                xaxis=dict(title=dict(text="Date",font=dict(color="#334155")),
-                           tickfont=dict(color="#334155")),
-                yaxis=dict(title=dict(text="Avg Fare (Rs)",font=dict(color="#334155")),
-                           tickfont=dict(color="#334155")))
+                font=dict(family="Inter", size=14, color="#334155"),
+                title=dict(text=f"Avg Fare -- {sel}", font=dict(color="#003366",size=18, weight="bold")),
+                xaxis=dict(title=dict(text="Date",font=dict(color="#334155", size=14, weight="bold")),
+                           tickfont=dict(color="#334155", size=13)),
+                yaxis=dict(title=dict(text="Avg Fare (Rs)",font=dict(color="#334155", size=14, weight="bold")),
+                           tickfont=dict(color="#334155", size=13)))
             st.plotly_chart(fig2, use_container_width=True, theme=None)
 
 # ── ANALYTICS ─────────────────────────────────────────────────────────────────
