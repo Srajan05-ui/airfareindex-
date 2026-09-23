@@ -88,28 +88,32 @@ def _make_index(fares):
 @st.cache_data(ttl=300)
 def get_data():
     db_url = os.environ.get("DATABASE_URL", "").strip()
-    if db_url:
-        try:
-            from sqlalchemy import create_engine, text
-            engine = create_engine(db_url, pool_pre_ping=True)
-            fares = pd.read_sql(
-                text("SELECT * FROM fare_observations_clean "
-                     "WHERE is_duplicate=FALSE AND is_outlier=FALSE AND price IS NOT NULL"),
-                engine)
-            if not fares.empty:
-                fares["observed_at_ist"] = pd.to_datetime(
-                    fares["observed_at_utc"], utc=True).dt.tz_convert("Asia/Kolkata")
-                fares["route"] = fares["origin"] + " -> " + fares["destination"]
-            index = pd.read_sql(
-                text("SELECT * FROM airfare_index ORDER BY computed_at_utc"), engine)
-            if not index.empty:
-                index["computed_at_ist"] = pd.to_datetime(
-                    index["computed_at_utc"], utc=True).dt.tz_convert("Asia/Kolkata")
-            return fares, index, False
-        except Exception:
-            pass
-    fares = _make_fares()
-    return fares, _make_index(fares), True
+    if not db_url:
+        # For Git Scraping architecture, the SQLite DB is committed directly
+        db_url = "sqlite:///airfare.db"
+    
+    try:
+        from sqlalchemy import create_engine, text
+        engine = create_engine(db_url, pool_pre_ping=True)
+        fares = pd.read_sql(
+            text("SELECT * FROM fare_observations_clean "
+                 "WHERE is_duplicate=FALSE AND is_outlier=FALSE AND price IS NOT NULL"),
+            engine)
+        if not fares.empty:
+            fares["observed_at_ist"] = pd.to_datetime(
+                fares["observed_at_utc"], utc=True).dt.tz_convert("Asia/Kolkata")
+            fares["route"] = fares["origin"] + " -> " + fares["destination"]
+        index = pd.read_sql(
+            text("SELECT * FROM airfare_index ORDER BY computed_at_utc"), engine)
+        if not index.empty:
+            index["computed_at_ist"] = pd.to_datetime(
+                index["computed_at_utc"], utc=True).dt.tz_convert("Asia/Kolkata")
+        return fares, index, False
+    except Exception as e:
+        print(f"Error loading DB: {e}")
+        # Fallback to demo data if the DB doesn't exist yet
+        fares = _make_fares()
+        return fares, _make_index(fares), True
 
 fares_df, index_df, is_demo = get_data()
 

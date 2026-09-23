@@ -1,4 +1,4 @@
-﻿# Python cache
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
@@ -10,7 +10,6 @@ venv/
 .streamlit/secrets.toml
 
 # Large binary / log files
-*.db
 *.log
 logs/
 data/tariff_pdfs/
