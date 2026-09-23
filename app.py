@@ -136,16 +136,16 @@ st.sidebar.markdown(f"""<div style='font-size:.8rem;opacity:.75'>
 
 if is_demo:
     st.markdown("""<div class="demo-banner">
-    ?? <b>DEMO MODE</b> — Showing synthetic sample data.
+    ?? <b>DEMO MODE</b> -- Showing synthetic sample data.
     Connect a live DATABASE_URL in Streamlit secrets for real fare data.
     </div>""",unsafe_allow_html=True)
 
 # --- OVERVIEW -----------------------------------------------------------------
 if page=="?? Overview":
     st.markdown(f"""<div class="main-header">
-    <h1>???? AirPrice India — National Airfare Monitoring System</h1>
+    <h1>???? AirPrice India -- National Airfare Monitoring System</h1>
     <p>Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
-    <span class="badge">SIH26056 · REAL-TIME SURVEILLANCE</span>
+    <span class="badge">SIH26056 Â· REAL-TIME SURVEILLANCE</span>
     </div>""",unsafe_allow_html=True)
 
     latest_idx=(index_df.sort_values("computed_at_ist").groupby(["origin","destination"]).tail(1)
@@ -281,7 +281,7 @@ elif page=="??? Routes & CPI":
                 line=dict(color=C["blue"],width=2.5),hovertemplate="%{x}<br>Rs%{y:,.0f}<extra></extra>"))
             fig2.update_layout(height=480,template="plotly_white",plot_bgcolor="white",paper_bgcolor="white",
                 font=dict(family="Inter",size=12,color="#334155"),
-                title=dict(text=f"Avg Fare — {sel}",font=dict(color="#003366",size=14)),
+                title=dict(text=f"Avg Fare -- {sel}",font=dict(color="#003366",size=14)),
                 xaxis=dict(title=dict(text="Date",font=dict(color="#334155")),tickfont=dict(color="#334155")),
                 yaxis=dict(title=dict(text="Avg Fare (Rs)",font=dict(color="#334155")),tickfont=dict(color="#334155")))
             st.plotly_chart(fig2,use_container_width=True,theme=None)
@@ -318,7 +318,7 @@ elif page=="?? Analytics":
             yaxis=dict(title=dict(text="Fare (Rs)",font=dict(color="#334155")),tickfont=dict(color="#334155")),
             legend=dict(font=dict(color="#334155")))
         st.plotly_chart(fig2,use_container_width=True,theme=None)
-    st.markdown('<div class="sec">?? Airline Performance Space — 3D</div>',unsafe_allow_html=True)
+    st.markdown('<div class="sec">?? Airline Performance Space -- 3D</div>',unsafe_allow_html=True)
     stats=airline_stats(fares_df).reset_index(drop=True)
     stats["rank"]=np.arange(1,len(stats)+1)
     fr=max(stats["Avg Fare (Rs)"].max()-stats["Avg Fare (Rs)"].min(),1)
@@ -389,7 +389,7 @@ elif page=="?? Forecast":
         fig.add_hline(y=100,line_dash="dash",line_color=C["gray"],annotation_text="Base 100",annotation_font_color=C["gray"])
         fig.update_layout(height=400,template="plotly_white",plot_bgcolor="white",paper_bgcolor="white",
             font=dict(family="Inter",size=12,color="#334155"),
-            title=dict(text="National Airfare CPI — 30-Day Forecast",font=dict(color="#003366",size=15)),
+            title=dict(text="National Airfare CPI -- 30-Day Forecast",font=dict(color="#003366",size=15)),
             xaxis=dict(title=dict(text="Date",font=dict(color="#334155")),tickfont=dict(color="#334155")),
             yaxis=dict(title=dict(text="CPI Value",font=dict(color="#334155")),tickfont=dict(color="#334155")),
             legend=dict(font=dict(color="#334155")))
@@ -407,6 +407,6 @@ elif page=="?? Forecast":
 
 st.markdown("---")
 st.markdown(f"""<div style='text-align:center;color:#5D6D7E;font-size:.8rem'>
-AirPrice India · SIH26056 · Ministry of Civil Aviation ·
-{'?? Demo Data' if is_demo else '?? Live Data'} · {datetime.now().strftime('%Y-%m-%d %H:%M IST')}
+AirPrice India Â· SIH26056 Â· Ministry of Civil Aviation Â·
+{'?? Demo Data' if is_demo else '?? Live Data'} Â· {datetime.now().strftime('%Y-%m-%d %H:%M IST')}
 </div>""",unsafe_allow_html=True)
