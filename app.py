@@ -130,7 +130,7 @@ def airline_stats(df):
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-*, body {{ font-family: 'Inter', sans-serif !important; }}
+html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
 .main-header {{
     background: linear-gradient(135deg, {C['navy']} 0%, {C['blue']} 60%, {C['teal']} 100%);
     color: white; padding: 2.5rem 2rem; border-radius: 16px; margin-bottom: 1.5rem;
