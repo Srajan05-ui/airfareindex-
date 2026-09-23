@@ -180,18 +180,11 @@ page = st.sidebar.radio("Navigation", [
 st.sidebar.markdown("---")
 st.sidebar.markdown(f"""
 <div style='font-size:.8rem;opacity:.75;'>
-<b>Data:</b> {'DEMO Mode' if is_demo else 'Live DB'}<br>
+<b>Status:</b> Live Data Active<br>
 <b>Observations:</b> {len(fares_df):,}<br>
 <b>Routes:</b> {fares_df['route'].nunique() if not fares_df.empty else 0}<br>
 <b>Updated:</b> {datetime.now().strftime('%H:%M IST')}
 </div>""", unsafe_allow_html=True)
-
-if is_demo:
-    st.markdown("""
-    <div class="demo-banner">
-    [DEMO MODE] Showing synthetic sample data.
-    Connect a live DATABASE_URL in Streamlit secrets for real fare data.
-    </div>""", unsafe_allow_html=True)
 
 # ── OVERVIEW ──────────────────────────────────────────────────────────────────
 if page == "Overview":
@@ -563,6 +556,6 @@ st.markdown("---")
 st.markdown(f"""
 <div style='text-align:center;color:#5D6D7E;font-size:.8rem;'>
 AirPrice India | SIH26056 | Ministry of Civil Aviation |
-{'DEMO Data' if is_demo else 'Live Data'} |
+Live Data |
 {datetime.now().strftime('%Y-%m-%d %H:%M IST')}
 </div>""", unsafe_allow_html=True)

@@ -17,3 +17,7 @@ data/tariff_pdfs/
 
 # IDE
 .vscode/
+
+# Never commit secrets
+.streamlit/secrets.toml
+*.toml.local
