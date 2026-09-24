@@ -35,15 +35,18 @@ const MOCK_AIRLINES = [
   { name: 'Akasa Air', avg_fare: 5100, obs: 8000 },
 ];
 
-const MOCK_FARES = Array.from({ length: 50 }).map((_, i) => ({
-  airline: MOCK_AIRLINES[i % MOCK_AIRLINES.length].name,
-  origin: ['DEL', 'BOM', 'BLR', 'CCU'][i % 4],
-  destination: ['BOM', 'BLR', 'CCU', 'HYD'][(i+1) % 4],
-  price: 4000 + Math.floor(Math.random() * 5000),
-  observed_at_utc: new Date(Date.now() - Math.random() * 100000000).toISOString(),
-  is_duplicate: false,
-  is_outlier: false
-}));
+const MOCK_FARES = Array.from({ length: 150 }).map((_, i) => {
+  const route = MOCK_INDEX[i % MOCK_INDEX.length];
+  return {
+    airline: MOCK_AIRLINES[i % MOCK_AIRLINES.length].name,
+    origin: route.origin,
+    destination: route.destination,
+    price: 4000 + Math.floor(Math.random() * 5000),
+    observed_at_utc: new Date(Date.now() - (i * 86400000)).toISOString(),
+    is_duplicate: false,
+    is_outlier: false
+  };
+});
 
 const COLORS = ['#1E3A8A', '#0D9488', '#F59E0B', '#DC2626', '#334155'];
 
