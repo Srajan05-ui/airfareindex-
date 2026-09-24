@@ -407,7 +407,9 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    // Use VITE_API_URL if set, fallback to the known Render backend URL
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://airfareindex.onrender.com';
+    console.log('[AirPrice] Connecting to API at:', apiUrl);
     
     Promise.all([
       fetch(`${apiUrl}/index/latest`).then(r => r.json()).catch(() => []),
