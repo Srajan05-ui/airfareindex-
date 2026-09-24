@@ -232,7 +232,7 @@ export default function App() {
               </div>
               <div className="flex-1 p-6">
                 <ResponsiveContainer width="100%" height={450}>
-                  <BarChart data={indexData.sort((a,b)=> b.index_value - a.index_value).slice(0,10)} layout="vertical" margin={{top: 0, right: 30, left: 20, bottom: 0}}>
+                  <BarChart data={[...indexData].sort((a,b)=> b.index_value - a.index_value).slice(0,10)} layout="vertical" margin={{top: 0, right: 30, left: 20, bottom: 0}}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
                     <XAxis type="number" domain={[80, 130]} tick={{fontSize: 12, fill: '#64748B'}} />
                     <YAxis dataKey={(d) => `${d.origin} → ${d.destination}`} type="category" width={80} tick={{fontSize: 12, fill: '#0F172A', fontWeight: 600}} />
