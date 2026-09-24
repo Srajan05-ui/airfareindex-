@@ -91,15 +91,15 @@ export default function App() {
         </div>
         
         <nav className="flex-1 py-6 px-4 space-y-2">
-          <a href="#" className="flex items-center space-x-3 px-4 py-3 bg-white/10 rounded-lg text-gov-gold border-l-4 border-gov-gold transition-colors">
+          <a href="#dashboard" className="flex items-center space-x-3 px-4 py-3 bg-white/10 rounded-lg text-gov-gold border-l-4 border-gov-gold transition-colors">
             <Activity size={20} />
             <span className="font-semibold">Executive Dashboard</span>
           </a>
-          <a href="#" className="flex items-center space-x-3 px-4 py-3 text-white/70 hover:bg-white/5 hover:text-white rounded-lg transition-colors border-l-4 border-transparent">
+          <a href="#route-surveillance" className="flex items-center space-x-3 px-4 py-3 text-white/70 hover:bg-white/5 hover:text-white rounded-lg transition-colors border-l-4 border-transparent">
             <MapIcon size={20} />
             <span className="font-medium">Route Surveillance</span>
           </a>
-          <a href="#" className="flex items-center space-x-3 px-4 py-3 text-white/70 hover:bg-white/5 hover:text-white rounded-lg transition-colors border-l-4 border-transparent">
+          <a href="#carrier-analytics" className="flex items-center space-x-3 px-4 py-3 text-white/70 hover:bg-white/5 hover:text-white rounded-lg transition-colors border-l-4 border-transparent">
             <Plane size={20} />
             <span className="font-medium">Carrier Analytics</span>
           </a>
@@ -121,10 +121,10 @@ export default function App() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto scroll-smooth">
         
         {/* Header */}
-        <header className="bg-white px-10 py-8 shadow-sm border-b border-slate-200 flex items-center justify-between sticky top-0 z-10">
+        <header id="dashboard" className="bg-white px-10 py-8 shadow-sm border-b border-slate-200 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center space-x-5">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Emblem" className="w-12 drop-shadow-sm" />
             <div>
@@ -138,7 +138,7 @@ export default function App() {
         </header>
 
         {/* Dashboard Body */}
-        <main className="p-10 max-w-[1600px] w-full mx-auto space-y-8">
+        <main className="p-10 max-w-[1600px] w-full mx-auto space-y-12">
           
           {/* KPIs */}
           <div className="grid grid-cols-4 gap-6">
@@ -163,7 +163,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-8">
+          <div id="route-surveillance" className="grid grid-cols-3 gap-8">
             
             {/* Realistic 2D Map */}
             <div className="col-span-2 bg-white rounded-xl shadow-sm border border-slate-150 overflow-hidden flex flex-col">
@@ -249,7 +249,7 @@ export default function App() {
 
           </div>
 
-          <div className="grid grid-cols-2 gap-8">
+          <div id="carrier-analytics" className="grid grid-cols-2 gap-8">
             {/* Airline Analytics */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-150 flex flex-col">
               <div className="px-6 py-4 border-b border-slate-100">
