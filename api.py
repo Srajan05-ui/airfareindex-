@@ -50,17 +50,22 @@ class IndexPoint(BaseModel):
 @app.get("/index/latest", response_model=list[IndexPoint])
 def latest_index():
     engine = get_engine()
-    df = pd.read_sql(
-        text(
-            """
-            SELECT origin, destination, base_period, index_value,
-                n_observations, computed_at_utc
-            FROM airfare_index
-            ORDER BY origin, destination, computed_at_utc DESC
-            """
-        ),
-        engine,
-    )
+    try:
+        df = pd.read_sql(
+            text(
+                """
+                SELECT origin, destination, base_period, index_value,
+                    n_observations, computed_at_utc
+                FROM airfare_index
+                ORDER BY origin, destination, computed_at_utc DESC
+                """
+            ),
+            engine,
+        )
+    except Exception as e:
+        print(f"Database error (tables might not exist yet): {e}")
+        return []
+
     if df.empty:
         return []
     df = df.drop_duplicates(subset=["origin", "destination"], keep="first")
@@ -69,21 +74,27 @@ def latest_index():
     df["base_period"] = df["base_period"].astype(str)
     return df.to_dict(orient="records")
 
+
 @app.get("/fares/latest")
 def latest_fares():
     engine = get_engine()
-    df = pd.read_sql(
-        text(
-            """
-            SELECT airline, origin, destination, price, observed_at_utc, is_duplicate, is_outlier
-            FROM fare_observations_clean
-            WHERE is_duplicate = FALSE AND is_outlier = FALSE AND price IS NOT NULL
-            ORDER BY observed_at_utc DESC
-            LIMIT 5000
-            """
-        ),
-        engine,
-    )
+    try:
+        df = pd.read_sql(
+            text(
+                """
+                SELECT airline, origin, destination, price, observed_at_utc, is_duplicate, is_outlier
+                FROM fare_observations_clean
+                WHERE is_duplicate = FALSE AND is_outlier = FALSE AND price IS NOT NULL
+                ORDER BY observed_at_utc DESC
+                LIMIT 5000
+                """
+            ),
+            engine,
+        )
+    except Exception as e:
+        print(f"Database error (tables might not exist yet): {e}")
+        return []
+        
     if df.empty:
         return []
     return df.to_dict(orient="records")

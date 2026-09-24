@@ -30,7 +30,11 @@ def get_engine():
     global _engine
     if _engine is None:
         from sqlalchemy import create_engine
-        if not config.DATABASE_URL:
-            raise RuntimeError("DATABASE_URL is not set - see db.py docstring.")
-        _engine = create_engine(config.DATABASE_URL, pool_pre_ping=True)
+        
+        db_url = config.DATABASE_URL
+        if not db_url:
+            db_url = "sqlite:///airfare.db"
+            print("WARNING: DATABASE_URL is not set. Falling back to local sqlite:///airfare.db")
+            
+        _engine = create_engine(db_url, pool_pre_ping=True)
     return _engine

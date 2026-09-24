@@ -48,8 +48,11 @@ export default function App() {
       .then(data => {
         if (data && data.length > 0) {
           setIndexData(data);
+          setError(false);
         } else {
+          console.warn("API returned empty data. Using mock data.");
           setIndexData(MOCK_INDEX);
+          setError(true);
         }
         setLoading(false);
       })
