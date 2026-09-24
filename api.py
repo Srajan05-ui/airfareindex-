@@ -39,21 +39,23 @@ app.add_middleware(
 
 @app.on_event("startup")
 def create_tables():
-    """Auto-create tables on first boot so fresh Neon DB works immediately."""
+    """Auto-create and auto-migrate tables on first boot."""
     try:
         engine = get_engine()
         with engine.connect() as conn:
+            # Create airfare_index table
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS airfare_index (
                     id SERIAL PRIMARY KEY,
-                    origin VARCHAR(10),
-                    destination VARCHAR(10),
-                    base_period VARCHAR(20),
-                    index_value FLOAT,
-                    n_observations INTEGER,
+                    origin VARCHAR(10) NOT NULL,
+                    destination VARCHAR(10) NOT NULL,
+                    base_period VARCHAR(20) DEFAULT '2024-Q1',
+                    index_value FLOAT NOT NULL,
+                    n_observations INTEGER DEFAULT 0,
                     computed_at_utc TIMESTAMP DEFAULT NOW()
                 )
             """))
+            # Create fare_observations_clean table
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS fare_observations_clean (
                     id SERIAL PRIMARY KEY,
@@ -66,10 +68,17 @@ def create_tables():
                     is_outlier BOOLEAN DEFAULT FALSE
                 )
             """))
+            # Auto-add missing base_period column if table already existed without it
+            conn.execute(text("""
+                DO $$ BEGIN
+                    ALTER TABLE airfare_index ADD COLUMN IF NOT EXISTS base_period VARCHAR(20) DEFAULT '2024-Q1';
+                EXCEPTION WHEN others THEN NULL;
+                END $$;
+            """))
             conn.commit()
-            print("Tables created/verified successfully.")
+            print("Tables created/verified OK.")
     except Exception as e:
-        print(f"Table creation skipped (may already exist): {e}")
+        print(f"Startup table setup warning: {e}")
 
 class IndexPoint(BaseModel):
     origin: str
