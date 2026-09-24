@@ -37,6 +37,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+def create_tables():
+    """Auto-create tables on first boot so fresh Neon DB works immediately."""
+    try:
+        engine = get_engine()
+        with engine.connect() as conn:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS airfare_index (
+                    id SERIAL PRIMARY KEY,
+                    origin VARCHAR(10),
+                    destination VARCHAR(10),
+                    base_period VARCHAR(20),
+                    index_value FLOAT,
+                    n_observations INTEGER,
+                    computed_at_utc TIMESTAMP DEFAULT NOW()
+                )
+            """))
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS fare_observations_clean (
+                    id SERIAL PRIMARY KEY,
+                    airline VARCHAR(100),
+                    origin VARCHAR(10),
+                    destination VARCHAR(10),
+                    price FLOAT,
+                    observed_at_utc TIMESTAMP DEFAULT NOW(),
+                    is_duplicate BOOLEAN DEFAULT FALSE,
+                    is_outlier BOOLEAN DEFAULT FALSE
+                )
+            """))
+            conn.commit()
+            print("Tables created/verified successfully.")
+    except Exception as e:
+        print(f"Table creation skipped (may already exist): {e}")
 
 class IndexPoint(BaseModel):
     origin: str
@@ -50,6 +83,55 @@ class IndexPoint(BaseModel):
 def health_check():
     """Lightweight endpoint for UptimeRobot to keep the Render server awake."""
     return {"status": "ok", "service": "airfare-api"}
+
+@app.post("/seed")
+def seed_sample_data():
+    """Seed the database with sample data for testing. Call once after deployment."""
+    engine = get_engine()
+    sample_index = [
+        ("DEL", "BOM", "2024-Q1", 115.2, 420),
+        ("BOM", "BLR", "2024-Q1", 98.4, 380),
+        ("DEL", "BLR", "2024-Q1", 106.1, 510),
+        ("BLR", "CCU", "2024-Q1", 92.5, 290),
+        ("DEL", "CCU", "2024-Q1", 101.0, 440),
+        ("HYD", "MAA", "2024-Q1", 108.9, 310),
+        ("DEL", "HYD", "2024-Q1", 103.5, 395),
+        ("BOM", "COK", "2024-Q1", 97.2, 265),
+        ("DEL", "GOI", "2024-Q1", 111.8, 345),
+        ("AMD", "BOM", "2024-Q1", 94.1, 220),
+    ]
+    sample_fares = [
+        ("IndiGo", "DEL", "BOM", 5200),
+        ("Air India", "DEL", "BOM", 6100),
+        ("SpiceJet", "BOM", "BLR", 4700),
+        ("IndiGo", "BOM", "BLR", 5100),
+        ("Vistara", "DEL", "BLR", 7200),
+        ("IndiGo", "DEL", "BLR", 5400),
+        ("Air India", "DEL", "CCU", 6500),
+        ("IndiGo", "DEL", "CCU", 5600),
+        ("SpiceJet", "HYD", "MAA", 4200),
+        ("IndiGo", "HYD", "MAA", 4900),
+    ]
+    try:
+        with engine.connect() as conn:
+            # Insert index data
+            for row in sample_index:
+                conn.execute(text("""
+                    INSERT INTO airfare_index (origin, destination, base_period, index_value, n_observations)
+                    VALUES (:origin, :destination, :base_period, :index_value, :n_observations)
+                    ON CONFLICT DO NOTHING
+                """), {"origin": row[0], "destination": row[1], "base_period": row[2],
+                       "index_value": row[3], "n_observations": row[4]})
+            # Insert fare observations
+            for row in sample_fares:
+                conn.execute(text("""
+                    INSERT INTO fare_observations_clean (airline, origin, destination, price)
+                    VALUES (:airline, :origin, :destination, :price)
+                """), {"airline": row[0], "origin": row[1], "destination": row[2], "price": row[3]})
+            conn.commit()
+        return {"status": "seeded", "index_rows": len(sample_index), "fare_rows": len(sample_fares)}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
 
 @app.get("/index/latest", response_model=list[IndexPoint])
 def latest_index():
