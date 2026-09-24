@@ -102,11 +102,11 @@ function OverviewPage({ indexData, MOCK_AIRLINES, nationalCPI }) {
               <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-gov-blue"></div> Stable</span>
             </div>
           </div>
-          <div className="flex-1 min-h-[500px] relative z-0">
+          <div className="flex-1 min-h-[500px] relative z-0 border border-slate-200">
             <MapContainer center={[21.0, 78.5]} zoom={4.5} scrollWheelZoom={true} className="w-full h-full">
               <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               />
               {indexData.map((route, i) => {
                 const orig = CITY_COORDS[route.origin];
