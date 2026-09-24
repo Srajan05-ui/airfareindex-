@@ -22,9 +22,19 @@ from sqlalchemy import text
 
 from db import get_engine
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(
     title="AirPrice India — Index API (prototype)",
     description="SIH26056 internal hackathon prototype. Not production-hardened.",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -57,6 +67,25 @@ def latest_index():
     if df.empty:
         return []
     df["base_period"] = df["base_period"].astype(str)
+    return df.to_dict(orient="records")
+
+@app.get("/fares/latest")
+def latest_fares():
+    engine = get_engine()
+    df = pd.read_sql(
+        text(
+            """
+            SELECT airline, origin, destination, price, observed_at_utc, is_duplicate, is_outlier
+            FROM fare_observations_clean
+            WHERE is_duplicate = FALSE AND is_outlier = FALSE AND price IS NOT NULL
+            ORDER BY observed_at_utc DESC
+            LIMIT 5000
+            """
+        ),
+        engine,
+    )
+    if df.empty:
+        return []
     return df.to_dict(orient="records")
 
 
