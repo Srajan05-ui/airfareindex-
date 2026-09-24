@@ -230,6 +230,8 @@ function OverviewPage({ indexData, MOCK_AIRLINES, nationalCPI }) {
   );
 }
 
+import Plot from 'react-plotly.js';
+
 function RouteAnalysisPage({ indexData, faresData }) {
   const [selectedRoute, setSelectedRoute] = useState(
     indexData.length > 0 ? `${indexData[0].origin}-${indexData[0].destination}` : "DEL-BOM"
@@ -238,6 +240,32 @@ function RouteAnalysisPage({ indexData, faresData }) {
   const routeFares = faresData.filter(
     f => `${f.origin}-${f.destination}` === selectedRoute
   ).sort((a,b) => new Date(a.observed_at_utc) - new Date(b.observed_at_utc));
+
+  // Group data for the Pie chart (Market Share / Observations by Airline)
+  const airlineCounts = {};
+  routeFares.forEach(f => {
+    airlineCounts[f.airline] = (airlineCounts[f.airline] || 0) + 1;
+  });
+  const pieData = Object.keys(airlineCounts).map(name => ({
+    name,
+    value: airlineCounts[name]
+  }));
+
+  // Prepare data for 3D Plotly Graph
+  // X: Time, Y: Airline Name (categorical), Z: Price
+  const airlines = [...new Set(routeFares.map(f => f.airline))];
+  const plotlyData = airlines.map(airline => {
+    const subset = routeFares.filter(f => f.airline === airline);
+    return {
+      x: subset.map(f => f.observed_at_utc),
+      y: subset.map(f => f.airline),
+      z: subset.map(f => f.price),
+      mode: 'markers',
+      type: 'scatter3d',
+      name: airline,
+      marker: { size: 5, opacity: 0.8 }
+    };
+  });
 
   return (
     <main className="p-10 max-w-[1600px] w-full mx-auto space-y-8 animate-in fade-in duration-300">
@@ -257,35 +285,70 @@ function RouteAnalysisPage({ indexData, faresData }) {
           </select>
         </div>
         
-        <div className="h-[500px]">
-          {routeFares.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={routeFares} margin={{top: 10, right: 30, left: 20, bottom: 5}}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0"/>
-                <XAxis 
-                  dataKey="observed_at_utc" 
-                  tickFormatter={t => new Date(t).toLocaleDateString('en-IN', {month: 'short', day: 'numeric'})}
-                  tick={{fontSize: 12, fill: '#64748B'}}
-                />
-                <YAxis 
-                  tick={{fontSize: 12, fill: '#64748B'}}
-                  tickFormatter={v => `₹${v}`}
-                />
-                <RechartsTooltip 
-                  labelFormatter={t => new Date(t).toLocaleString('en-IN')}
-                  formatter={v => [`₹${v}`, 'Price']}
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)'}}
-                />
-                <Line type="monotone" dataKey="price" stroke="#1E3A8A" strokeWidth={3} dot={{r: 4, fill: '#1E3A8A'}} activeDot={{r: 6}} />
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-              <Search size={48} className="mb-4 opacity-50" />
-              <p>No historical fare data found for this route.</p>
+        {routeFares.length > 0 ? (
+          <div className="space-y-12">
+            {/* Professional Donut Pie Chart */}
+            <div className="h-[450px] flex flex-col items-center">
+              <h3 className="text-center text-lg font-bold text-gov-navy mb-4">Carrier Density Analysis (Observations)</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={100}
+                    outerRadius={150}
+                    paddingAngle={3}
+                    dataKey="value"
+                    label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    labelLine={true}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    formatter={(value) => [value, "Observations"]}
+                    contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)'}}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
-          )}
-        </div>
+
+            <hr className="border-slate-100" />
+
+            {/* 3D View Graph */}
+            <div className="flex flex-col items-center">
+              <h3 className="text-center text-lg font-bold text-gov-navy mb-4">3D Fare Topography & Timeline Analysis</h3>
+              <div className="w-full overflow-hidden flex justify-center bg-slate-50 rounded-xl border border-slate-150 p-4">
+                <Plot
+                  data={plotlyData}
+                  layout={{
+                    width: 1000,
+                    height: 600,
+                    margin: { l: 0, r: 0, b: 0, t: 0 },
+                    paper_bgcolor: 'transparent',
+                    plot_bgcolor: 'transparent',
+                    scene: {
+                      xaxis: { title: 'Date', showgrid: true, tickfont: { size: 10 } },
+                      yaxis: { title: 'Airline', showgrid: true },
+                      zaxis: { title: 'Price (₹)', showgrid: true },
+                      camera: { eye: {x: 1.5, y: 1.5, z: 1.2} }
+                    },
+                    showlegend: true,
+                    legend: { x: 0, y: 1 }
+                  }}
+                  config={{ responsive: true, displayModeBar: false }}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="h-[500px] w-full flex flex-col items-center justify-center text-slate-400">
+            <Search size={48} className="mb-4 opacity-50" />
+            <p>No historical fare data found for this route.</p>
+          </div>
+        )}
       </div>
     </main>
   );
