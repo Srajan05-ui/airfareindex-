@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements_deploy.txt
-          pip install schedule playwright bs4 lxml  # Scraper specific requirements if not in deploy
+          pip install schedule playwright bs4 lxml fast-flights tenacity
 
       - name: Install browser for scraping
         run: python -m playwright install chromium
