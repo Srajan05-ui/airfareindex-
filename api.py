@@ -75,6 +75,29 @@ def create_tables():
                 EXCEPTION WHEN others THEN NULL;
                 END $$;
             """))
+            
+            # Automatically seed fare observations if table is empty
+            fares_count = conn.execute(text("SELECT COUNT(*) FROM fare_observations_clean")).scalar()
+            if fares_count == 0:
+                print("Seeding missing fare_observations_clean data automatically...")
+                fares_seed = [
+                    ('IndiGo', 'DEL', 'BOM', 5200),
+                    ('Air India', 'DEL', 'BOM', 6100),
+                    ('SpiceJet', 'BOM', 'BLR', 4700),
+                    ('IndiGo', 'BOM', 'BLR', 5100),
+                    ('Vistara', 'DEL', 'BLR', 7200),
+                    ('IndiGo', 'DEL', 'BLR', 5400),
+                    ('Air India', 'DEL', 'CCU', 6500),
+                    ('IndiGo', 'DEL', 'CCU', 5600),
+                    ('SpiceJet', 'HYD', 'MAA', 4200),
+                    ('IndiGo', 'HYD', 'MAA', 4900)
+                ]
+                for f in fares_seed:
+                    conn.execute(text("""
+                        INSERT INTO fare_observations_clean (airline, origin, destination, price, is_duplicate, is_outlier)
+                        VALUES (:airline, :origin, :destination, :price, FALSE, FALSE)
+                    """), {"airline": f[0], "origin": f[1], "destination": f[2], "price": f[3]})
+
             conn.commit()
             print("Tables created/verified OK.")
     except Exception as e:
