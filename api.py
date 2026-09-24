@@ -179,7 +179,9 @@ def latest_fares():
                 """
                 SELECT airline, origin, destination, price, observed_at_utc, is_duplicate, is_outlier
                 FROM fare_observations_clean
-                WHERE is_duplicate = FALSE AND is_outlier = FALSE AND price IS NOT NULL
+                WHERE (is_duplicate = FALSE OR is_duplicate IS NULL) 
+                  AND (is_outlier = FALSE OR is_outlier IS NULL) 
+                  AND price IS NOT NULL
                 ORDER BY observed_at_utc DESC
                 LIMIT 5000
                 """
