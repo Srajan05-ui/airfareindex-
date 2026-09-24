@@ -42,8 +42,8 @@ export default function App() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // In production, this would fetch from import.meta.env.VITE_API_URL
-    fetch('http://localhost:8000/index/latest')
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    fetch(`${apiUrl}/index/latest`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {
