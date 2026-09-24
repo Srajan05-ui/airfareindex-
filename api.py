@@ -46,6 +46,10 @@ class IndexPoint(BaseModel):
     n_observations: int
     computed_at_utc: datetime
 
+@app.get("/health")
+def health_check():
+    """Lightweight endpoint for UptimeRobot to keep the Render server awake."""
+    return {"status": "ok", "service": "airfare-api"}
 
 @app.get("/index/latest", response_model=list[IndexPoint])
 def latest_index():
