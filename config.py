@@ -49,9 +49,14 @@ BACKOFF_BASE_SECONDS = 20        # exponential backoff base on failure
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 CSV_PATH = os.path.join(DATA_DIR, "fare_observations.csv")
 
-# If set (e.g. postgresql+psycopg2://user:pass@host:5432/airfare), the
-# collector writes to Postgres/TimescaleDB instead of CSV. Unset = CSV.
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip() or None
+# If set, the collector writes to Postgres instead of CSV. Unset = CSV.
+_db_url = os.environ.get("DATABASE_URL", "").strip()
+if _db_url and _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif _db_url and _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+DATABASE_URL = _db_url or None
 
 # --- Identification (brief §5.2 "Identify ourselves") ----------------------
 PROJECT_USER_AGENT_NOTE = (
