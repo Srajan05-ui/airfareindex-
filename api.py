@@ -41,6 +41,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.responses import RedirectResponse
+
+@app.get("/")
+def read_root():
+    """Redirect root to the API docs."""
+    return RedirectResponse(url="/docs")
 @app.on_event("startup")
 def create_tables():
     """Auto-create and auto-migrate tables on first boot."""
