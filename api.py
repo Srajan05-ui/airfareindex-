@@ -161,6 +161,33 @@ class IndexPoint(BaseModel):
     n_observations: int
     computed_at_utc: datetime
 
+@app.get("/force-seed")
+def force_seed():
+    """Manually force seed the database to fix empty data issues."""
+    try:
+        engine = get_engine()
+        with engine.begin() as conn:
+            fares_seed = [
+                ('IndiGo', 'DEL', 'BOM', 5200),
+                ('Air India', 'DEL', 'BOM', 6100),
+                ('SpiceJet', 'BOM', 'BLR', 4700),
+                ('IndiGo', 'BOM', 'BLR', 5100),
+                ('Vistara', 'DEL', 'BLR', 7200),
+                ('IndiGo', 'DEL', 'BLR', 5400),
+                ('Air India', 'DEL', 'CCU', 6500),
+                ('IndiGo', 'DEL', 'CCU', 5600),
+                ('SpiceJet', 'HYD', 'MAA', 4200),
+                ('IndiGo', 'HYD', 'MAA', 4900)
+            ]
+            for f in fares_seed:
+                conn.execute(text("""
+                    INSERT INTO fare_observations_clean (airline, origin, destination, price, is_duplicate, is_outlier)
+                    VALUES (:airline, :origin, :destination, :price, FALSE, FALSE)
+                """), {"airline": f[0], "origin": f[1], "destination": f[2], "price": f[3]})
+            return {"status": "success", "message": "Fares seeded successfully."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.get("/health")
 def health_check():
     """Lightweight endpoint for UptimeRobot to keep the Render server awake."""
