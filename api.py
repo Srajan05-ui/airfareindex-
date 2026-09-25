@@ -221,7 +221,7 @@ def seed_sample_data():
         ("Air India", "DEL", "BOM", 6100),
         ("SpiceJet", "BOM", "BLR", 4700),
         ("IndiGo", "BOM", "BLR", 5100),
-        ("Vistara", "DEL", "BLR", 7200),
+        ("Air India Express", "DEL", "BLR", 7200),
         ("IndiGo", "DEL", "BLR", 5400),
         ("Air India", "DEL", "CCU", 6500),
         ("IndiGo", "DEL", "CCU", 5600),
