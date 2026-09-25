@@ -143,10 +143,10 @@ def create_tables():
         
         # Start the automated daily scraping pipeline in the background
         scheduler = BackgroundScheduler()
-        # Schedule to run every 24 hours (or adjust as needed)
-        scheduler.add_job(run_pipeline_main, 'interval', hours=24, id='daily_scraper', replace_existing=True)
+        # Schedule to run every 8 hours (3 times a day)
+        scheduler.add_job(run_pipeline_main, 'interval', hours=8, id='daily_scraper', replace_existing=True)
         scheduler.start()
-        print("Smart Automation: Background web scraping pipeline scheduled successfully.")
+        print("Smart Automation: Background web scraping pipeline scheduled successfully (3x daily).")
         
         # Optionally, kick off the first run 1 minute after boot
         scheduler.add_job(run_pipeline_main, 'date', run_date=datetime.now() + timedelta(minutes=1), id='initial_scraper')
