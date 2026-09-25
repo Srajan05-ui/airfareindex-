@@ -1,129 +1,143 @@
-# Oracle Cloud Always Free ARM64 Deployment Guide
+# Oracle Cloud Always Free ARM64 Native Deployment Guide (No Docker)
 
-This guide describes how to deploy the Airfare Index project on an Oracle Cloud Infrastructure (OCI) Always Free VM (VM.Standard.A1.Flex, ARM64) using Docker Compose.
+This guide describes how to natively deploy the Airfare Index project directly on an Oracle Cloud Infrastructure (OCI) Always Free VM (Ubuntu 22.04/24.04 ARM64) using Nginx, Systemd, and Python.
 
-## 1. Oracle VM Requirements
-
-- **Instance Type:** VM.Standard.A1.Flex (ARM64)
-- **OS Image:** Canonical Ubuntu 22.04 / 24.04
-- **OCPU:** 1 - 4
-- **RAM:** 6GB - 24GB
-- **Boot Volume:** 50GB minimum
-- **Public IP:** Assigned during creation
-
-## 2. Oracle VCN Ingress Requirements
-
-Ensure your Oracle Virtual Cloud Network (VCN) allows incoming HTTP and HTTPS traffic:
-1. Open the Oracle Cloud Console.
-2. Navigate to **Networking** -> **Virtual Cloud Networks**.
-3. Select your VCN, then click **Security List**.
-4. Add Ingress Rules:
-   - **Source CIDR:** `0.0.0.0/0`
-   - **Protocol:** TCP
-   - **Destination Port:** `80` (HTTP)
-   - **Destination Port:** `443` (HTTPS - optional but recommended for later)
-
-## 3. SSH Setup & Firewall Requirements
-
-SSH into the newly created VM:
+## 1. SSH into Your Oracle Server
+Connect to your cloud server using your SSH key:
 ```bash
-ssh -i /path/to/your/private_key.pem ubuntu@YOUR_PUBLIC_IP
+ssh -i /path/to/your/private_key.pem ubuntu@YOUR_ORACLE_PUBLIC_IP
 ```
 
-**Open the firewall on the VM:**
-Oracle's default Ubuntu images have strict iptables rules. Open port 80:
+## 2. Update System & Open Firewalls
+Oracle blocks port 80 by default in iptables. Open it up:
 ```bash
+sudo apt-get update
+sudo apt-get upgrade -y
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
 sudo netfilter-persistent save
 ```
 
-## 4. Docker Installation
-
-Install Docker and Docker Compose on Ubuntu ARM64:
+## 3. Install Required Software
+Install Python, Nginx, and Node.js:
 ```bash
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+# Install Python and Nginx
+sudo apt-get install -y python3-pip python3-venv nginx libpq-dev python3-dev gcc
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Allow non-root Docker usage (requires re-login to take effect)
-sudo usermod -aG docker $USER
+# Install Node.js (for building React)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
-*Note: Log out and log back in, or run `newgrp docker`.*
 
-## 5. Git Clone
-
-Clone the repository:
+## 4. Clone the Code
 ```bash
+cd ~
 git clone https://github.com/Srajan05-ui/airfareindex-.git
 cd airfareindex-
 ```
 
-## 6. `.env` Setup
+## 5. Set Up the Python Backend
+Create a virtual environment and install dependencies:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements_deploy.txt
+```
 
-Create the `.env` file on the server. **Do not commit this file to GitHub.**
+Create your `.env` file with the Neon database URL:
 ```bash
 nano .env
 ```
-Add the Neon PostgreSQL Database URL:
+Add:
 ```env
 DATABASE_URL=postgresql://YOUR_NEON_USERNAME:YOUR_NEON_PASSWORD@ep-YOUR-NEON-ID.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 CORS_ORIGINS=*
 ```
 
-## 7. Docker Compose Commands
-
-Build and start the application in detached mode:
+## 6. Run FastAPI as a Background Service
+We use `systemd` so the backend stays alive even if you close the terminal.
 ```bash
-docker compose build
-docker compose up -d
+sudo nano /etc/systemd/system/airfare-backend.service
+```
+Paste the following (assuming your username is `ubuntu`):
+```ini
+[Unit]
+Description=Airfare Index FastAPI Backend
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/airfareindex-
+EnvironmentFile=/home/ubuntu/airfareindex-/.env
+ExecStart=/home/ubuntu/airfareindex-/venv/bin/uvicorn api:app --host 127.0.0.1 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+Start and enable the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start airfare-backend
+sudo systemctl enable airfare-backend
 ```
 
-## 8. Verifying Connectivity
-
-Once the containers are up, test local connectivity on the VM:
+## 7. Build the React Frontend
 ```bash
-# Test Nginx routing to React SPA
-curl http://localhost/
-
-# Test Nginx proxying to FastAPI backend health check
-curl http://localhost/api/health
-
-# Test Nginx proxying to FastAPI data endpoints
-curl http://localhost/api/index/latest
+cd ~/airfareindex-/frontend
+npm install
+npm run build
 ```
 
-## 9. Troubleshooting & Logs
-
-To view logs for both frontend and backend:
+## 8. Configure Nginx
+Route web traffic to the React app, and `/api` to FastAPI.
 ```bash
-docker compose logs -f
+sudo nano /etc/nginx/sites-available/airfare
+```
+Paste this configuration:
+```nginx
+server {
+    listen 80;
+    server_name _;
+    
+    # Point to the React build folder
+    root /home/ubuntu/airfareindex-/frontend/dist;
+    index index.html;
+
+    # Gzip Compression
+    gzip on;
+    gzip_vary on;
+    gzip_types text/plain text/css application/javascript application/json;
+
+    # Proxy /api requests to FastAPI
+    location /api/ {
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Serve React SPA
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
 ```
 
-To view logs for only the backend (useful for API errors):
+Enable the site and restart Nginx:
 ```bash
-docker compose logs -f backend
+sudo ln -s /etc/nginx/sites-available/airfare /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx
 ```
 
-## 10. Restarting and Updating
+## 9. You're Done!
+Go to your browser and enter your **Oracle VM Public IP Address**.
+You should see the React dashboard loading data smoothly from Neon!
 
-To restart services:
+**To check backend logs if something fails:**
 ```bash
-docker compose restart
-```
-
-To update the deployment with new code from GitHub:
-```bash
-git pull origin master
-docker compose build
-docker compose up -d
+sudo journalctl -u airfare-backend -f
 ```
