@@ -131,6 +131,23 @@ def create_tables():
     except Exception as e:
         print(f"Startup table setup warning: {e}")
 
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from run_pipeline import main as run_pipeline_main
+        from datetime import datetime, timedelta
+        
+        # Start the automated daily scraping pipeline in the background
+        scheduler = BackgroundScheduler()
+        # Schedule to run every 24 hours (or adjust as needed)
+        scheduler.add_job(run_pipeline_main, 'interval', hours=24, id='daily_scraper', replace_existing=True)
+        scheduler.start()
+        print("Smart Automation: Background web scraping pipeline scheduled successfully.")
+        
+        # Optionally, kick off the first run 1 minute after boot
+        scheduler.add_job(run_pipeline_main, 'date', run_date=datetime.now() + timedelta(minutes=1), id='initial_scraper')
+    except Exception as e:
+        print(f"Smart Automation warning - failed to schedule pipeline: {e}")
+
 class IndexPoint(BaseModel):
     origin: str
     destination: str
