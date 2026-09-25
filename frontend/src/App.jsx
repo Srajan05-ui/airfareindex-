@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Polyline, CircleMarker, Tooltip } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { Activity, Map as MapIcon, Plane, TrendingUp, AlertTriangle, CheckCircle2, ServerCrash, Clock, ChevronLeft, Database, Search, Table } from 'lucide-react';
+import { Activity, Map as MapIcon, Plane, TrendingUp, AlertTriangle, CheckCircle2, ServerCrash, Clock, ChevronLeft, Database, Search, Table, Menu, X } from 'lucide-react';
 import L from 'leaflet';
 
 const CITY_COORDS = {
@@ -675,35 +675,51 @@ export default function App() {
     ? (indexData.reduce((acc, row) => acc + row.index_value, 0) / indexData.length).toFixed(1) 
     : "100.0";
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden text-slate-900 font-sans">
       
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="w-72 bg-gov-navy text-white flex flex-col shadow-2xl relative z-20">
-        <div className="p-8 text-center border-b border-white/10">
+      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 transition duration-200 ease-in-out w-72 bg-gov-navy text-white flex flex-col shadow-2xl`}>
+        <div className="p-8 text-center border-b border-white/10 relative">
+          <button 
+            className="md:hidden absolute top-4 right-4 text-white/70 hover:text-white"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <X size={24} />
+          </button>
           <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Gov Logo" className="w-16 mx-auto mb-4 drop-shadow-md brightness-200 contrast-200 grayscale" style={{ filter: 'brightness(0) invert(1)'}} />
           <h2 className="text-xl font-bold tracking-wider mb-1">Aerofare</h2>
           <p className="text-xs text-white/60 uppercase tracking-widest">National Airfare Monitor</p>
         </div>
         
-        <nav className="flex-1 py-6 px-4 space-y-2">
-          <Link to="/" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+        <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+          <Link onClick={() => setIsSidebarOpen(false)} to="/" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <Activity size={20} />
             <span className="font-semibold">Executive Dashboard</span>
           </Link>
-          <Link to="/mospi-data" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/mospi-data' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+          <Link onClick={() => setIsSidebarOpen(false)} to="/mospi-data" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/mospi-data' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <Database size={20} />
             <span className="font-semibold">MoSPI eSankhyiki</span>
           </Link>
-          <Link to="/route-analysis" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/route-analysis' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+          <Link onClick={() => setIsSidebarOpen(false)} to="/route-analysis" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/route-analysis' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <MapIcon size={20} />
             <span className="font-medium">Route Analysis</span>
           </Link>
-          <Link to="/raw-data" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/raw-data' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+          <Link onClick={() => setIsSidebarOpen(false)} to="/raw-data" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/raw-data' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <Table size={20} />
             <span className="font-medium">Raw Data Explorer</span>
           </Link>
-          <Link to="/ota-analysis" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname.startsWith('/ota-analysis') ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+          <Link onClick={() => setIsSidebarOpen(false)} to="/ota-analysis" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname.startsWith('/ota-analysis') ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <Search size={20} />
             <span className="font-medium">OTA Analysis</span>
           </Link>
@@ -728,19 +744,25 @@ export default function App() {
       <div className="flex-1 flex flex-col overflow-y-auto bg-slate-100">
         
         {/* Header */}
-        <header className="bg-white px-10 py-6 shadow-sm border-b border-slate-200 flex items-center justify-between sticky top-0 z-10">
-          <div className="flex items-center space-x-5">
+        <header className="bg-white px-4 md:px-10 py-4 md:py-6 shadow-sm border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between sticky top-0 z-10 gap-4">
+          <div className="flex items-center space-x-3 md:space-x-5">
+            <button 
+              className="md:hidden p-2 -ml-2 rounded-lg hover:bg-slate-100 text-slate-500"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
             {location.pathname !== '/' && (
-              <button onClick={() => navigate(-1)} className="mr-2 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors">
+              <button onClick={() => navigate(-1)} className="mr-0 md:mr-2 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors hidden md:block">
                 <ChevronLeft size={24} />
               </button>
             )}
             <div>
-              <h1 className="text-2xl font-extrabold text-gov-navy leading-tight">Aerofare : National Airfare Monitoring System</h1>
-              <p className="text-sm text-slate-500 mt-1 font-medium">Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
+              <h1 className="text-xl md:text-2xl font-extrabold text-gov-navy leading-tight">Aerofare : National Airfare Monitoring System</h1>
+              <p className="text-xs md:text-sm text-slate-500 mt-1 font-medium hidden md:block">Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
             </div>
           </div>
-          <div className="bg-gov-gold text-gov-navy px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
+          <div className="bg-gov-gold text-gov-navy px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm self-start md:self-center">
             SIH26056 - Real-Time Surveillance
           </div>
         </header>
