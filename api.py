@@ -104,9 +104,9 @@ def create_tables():
                         VALUES (:origin, :destination, :base_period, :index_value, :n_observations)
                     """), {"origin": r[0], "destination": r[1], "base_period": r[2], "index_value": r[3], "n_observations": r[4]})
 
-            # Automatically seed fare observations if table is empty
+            # Automatically seed fare observations if table is missing substantial data
             fares_count = conn.execute(text("SELECT COUNT(*) FROM fare_observations_clean")).scalar()
-            if fares_count == 0:
+            if fares_count < 5:
                 print("Seeding missing fare_observations_clean data automatically...")
                 fares_seed = [
                     ('IndiGo', 'DEL', 'BOM', 5200),
