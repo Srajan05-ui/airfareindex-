@@ -86,6 +86,24 @@ def create_tables():
                 END $$;
             """))
             
+            # Automatically seed airfare_index if table is empty
+            index_count = conn.execute(text("SELECT COUNT(*) FROM airfare_index")).scalar()
+            if index_count == 0:
+                print("Seeding missing airfare_index data automatically...")
+                index_seed = [
+                    ("DEL", "BOM", "2024-Q1", 115.2, 420),
+                    ("BOM", "BLR", "2024-Q1", 98.4, 380),
+                    ("DEL", "BLR", "2024-Q1", 106.1, 510),
+                    ("BLR", "CCU", "2024-Q1", 92.5, 290),
+                    ("DEL", "CCU", "2024-Q1", 101.0, 440),
+                    ("HYD", "MAA", "2024-Q1", 108.9, 310)
+                ]
+                for r in index_seed:
+                    conn.execute(text("""
+                        INSERT INTO airfare_index (origin, destination, base_period, index_value, n_observations)
+                        VALUES (:origin, :destination, :base_period, :index_value, :n_observations)
+                    """), {"origin": r[0], "destination": r[1], "base_period": r[2], "index_value": r[3], "n_observations": r[4]})
+
             # Automatically seed fare observations if table is empty
             fares_count = conn.execute(text("SELECT COUNT(*) FROM fare_observations_clean")).scalar()
             if fares_count == 0:
