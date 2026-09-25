@@ -30,7 +30,7 @@ const MOCK_INDEX = [
 const MOCK_AIRLINES = [
   { name: 'IndiGo', avg_fare: 5400, obs: 45000 },
   { name: 'Air India', avg_fare: 6200, obs: 28000 },
-  { name: 'Vistara', avg_fare: 7100, obs: 15000 },
+  { name: 'Air India Express', avg_fare: 5800, obs: 15000 },
   { name: 'SpiceJet', avg_fare: 4900, obs: 12000 },
   { name: 'Akasa Air', avg_fare: 5100, obs: 8000 },
 ];

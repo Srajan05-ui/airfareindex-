@@ -1,6 +1,6 @@
 """
 Live Airline Data Scraper - Real-time fare collection from Indian airlines
-Supports: IndiGo, Air India, SpiceJet, Vistara, AirAsia India
+Supports: IndiGo, Air India, SpiceJet, Air India Express, AirAsia India
 
 This module implements respectful scraping with:
 - robots.txt compliance
@@ -64,9 +64,9 @@ AIRLINES = {
         },
         enabled=True
     ),
-    "Vistara": AirlineConfig(
-        name="Vistara",
-        api_endpoint="https://www.airvistara.com/api/v1/search",
+    "Air India Express": AirlineConfig(
+        name="Air India Express",
+        api_endpoint="https://www.airAir India Express.com/api/v1/search",
         headers={
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Accept": "application/json"
@@ -109,7 +109,7 @@ def generate_mock_airline_data(airline: str, origin: str, destination: str,
         "IndiGo": 3500,
         "Air India": 4200,
         "SpiceJet": 3200,
-        "Vistara": 4800,
+        "Air India Express": 4800,
         "AirAsia India": 3000,
         "GoAir": 3300
     }
@@ -265,12 +265,12 @@ def scrape_spicejet(origin: str, destination: str, departure_date: date) -> List
         logger.error(f"SpiceJet scraping failed: {e}")
         return []
 
-def scrape_vistara(origin: str, destination: str, departure_date: date) -> List[FareObservation]:
-    """Scrape Vistara fares"""
-    logger.info(f"Scraping Vistara: {origin} → {destination} on {departure_date}")
+def scrape_Air India Express(origin: str, destination: str, departure_date: date) -> List[FareObservation]:
+    """Scrape Air India Express fares"""
+    logger.info(f"Scraping Air India Express: {origin} → {destination} on {departure_date}")
 
     try:
-        data = generate_mock_airline_data("Vistara", origin, destination, departure_date)
+        data = generate_mock_airline_data("Air India Express", origin, destination, departure_date)
 
         if not data["available"]:
             return []
@@ -280,23 +280,23 @@ def scrape_vistara(origin: str, destination: str, departure_date: date) -> List[
         observation = FareObservation(
             observed_at_utc=datetime.utcnow().isoformat() + "Z",
             source_tier="tier2_airline_direct",
-            source_detail="Vistara_Live",
+            source_detail="Air India Express_Live",
             origin=origin,
             destination=destination,
             departure_date=departure_date.isoformat(),
             booking_window_days=booking_window,
-            airline="Vistara",
+            airline="Air India Express",
             fare_type="ECONOMY",
             price=data["price"],
             currency="INR",
             is_price_band=False,
-            raw_ref=f"VISTARA_{origin}{destination}_{departure_date}_{int(time.time())}"
+            raw_ref=f"Air India Express_{origin}{destination}_{departure_date}_{int(time.time())}"
         )
 
         return [observation]
 
     except Exception as e:
-        logger.error(f"Vistara scraping failed: {e}")
+        logger.error(f"Air India Express scraping failed: {e}")
         return []
 
 def scrape_airasia(origin: str, destination: str, departure_date: date) -> List[FareObservation]:
@@ -375,7 +375,7 @@ SCRAPER_FUNCTIONS = {
     "IndiGo": scrape_indigo,
     "Air India": scrape_airindia,
     "SpiceJet": scrape_spicejet,
-    "Vistara": scrape_vistara,
+    "Air India Express": scrape_Air India Express,
     "AirAsia India": scrape_airasia,
     "GoAir": scrape_goair
 }
