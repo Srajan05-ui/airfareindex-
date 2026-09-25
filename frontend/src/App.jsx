@@ -398,6 +398,138 @@ function DataPage({ faresData }) {
   );
 }
 
+function OTAAnalysis({ faresData }) {
+  const [activeTab, setActiveTab] = useState('data');
+
+  // Filter out airlines, leaving OTAs (simulate by treating certain strings as OTAs or just showing all platforms for demonstration)
+  // For the sake of the demo, let's treat all sources in faresData as "Platforms/OTAs"
+  
+  // Prepare graph data (Avg price by Platform)
+  const platformStats = faresData.reduce((acc, row) => {
+    if (!acc[row.airline]) acc[row.airline] = { name: row.airline, total: 0, count: 0 };
+    acc[row.airline].total += row.price;
+    acc[row.airline].count += 1;
+    return acc;
+  }, {});
+
+  const graphData = Object.values(platformStats).map(d => ({
+    name: d.name,
+    avgPrice: Math.round(d.total / d.count)
+  })).sort((a, b) => b.avgPrice - a.avgPrice);
+
+  return (
+    <main className="p-10 max-w-[1600px] w-full mx-auto space-y-8 overflow-y-auto">
+      <div className="flex justify-between items-center border-b border-slate-200 pb-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gov-navy">OTA Scrape Analysis</h1>
+          <p className="text-slate-500 mt-2">Monitor data scraped from Online Travel Agencies and Platforms</p>
+        </div>
+        <div className="flex bg-slate-100 p-1 rounded-lg">
+          <button 
+            onClick={() => setActiveTab('data')}
+            className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${activeTab === 'data' ? 'bg-white shadow-sm text-gov-blue' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            Raw Scraped Data
+          </button>
+          <button 
+            onClick={() => setActiveTab('analysis')}
+            className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${activeTab === 'analysis' ? 'bg-white shadow-sm text-gov-blue' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            Analysis & Graphs
+          </button>
+        </div>
+      </div>
+
+      {activeTab === 'data' ? (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-150 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <h3 className="text-lg font-bold text-gov-navy">Latest OTA Scrape Records</h3>
+          </div>
+          <div className="max-h-[600px] overflow-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="text-xs text-slate-500 uppercase bg-white sticky top-0 shadow-sm">
+                <tr>
+                  <th className="px-6 py-4 font-semibold">Platform (OTA)</th>
+                  <th className="px-6 py-4 font-semibold">Route</th>
+                  <th className="px-6 py-4 font-semibold">Price (INR)</th>
+                  <th className="px-6 py-4 font-semibold">Observed At</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {faresData.slice(0, 100).map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gov-navy">{row.airline}</td>
+                    <td className="px-6 py-4 font-bold">{row.origin} &rarr; {row.destination}</td>
+                    <td className="px-6 py-4 font-mono">₹{row.price.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-slate-500">{new Date(row.observed_at_utc).toLocaleString('en-IN')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-150">
+            <h3 className="text-lg font-bold text-gov-navy mb-6 border-b pb-4">Average Fares by Platform</h3>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={graphData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" tick={{fill: '#64748b'}} axisLine={false} tickLine={false} />
+                  <YAxis tick={{fill: '#64748b'}} axisLine={false} tickLine={false} tickFormatter={v => `₹${v}`} />
+                  <RechartsTooltip 
+                    cursor={{fill: '#f1f5f9'}}
+                    contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                    formatter={(value) => [`₹${value.toLocaleString()}`, 'Average Price']}
+                  />
+                  <Bar dataKey="avgPrice" fill="#0D9488" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-150">
+            <h3 className="text-lg font-bold text-gov-navy mb-6 border-b pb-4">Scrape Volume Share</h3>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={graphData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={80}
+                    outerRadius={120}
+                    paddingAngle={2}
+                    dataKey="avgPrice"
+                    nameKey="name"
+                  >
+                    {graphData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                    formatter={(value) => [`₹${value.toLocaleString()}`, 'Avg Price']}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-4 mt-4">
+                {graphData.map((entry, index) => (
+                  <div key={entry.name} className="flex items-center text-sm text-slate-600">
+                    <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
+                    {entry.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
+
 export default function App() {
   const [indexData, setIndexData] = useState([]);
   const [faresData, setFaresData] = useState([]);
@@ -407,8 +539,7 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Use VITE_API_URL if set, fallback to the known Render backend URL
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://airfareindex.onrender.com';
+    const apiUrl = import.meta.env.VITE_API_URL || '/api';
     console.log('[AirPrice] Connecting to API at:', apiUrl);
     
     Promise.all([
@@ -464,6 +595,10 @@ export default function App() {
             <Table size={20} />
             <span className="font-medium">Raw Data Explorer</span>
           </Link>
+          <Link to="/ota-analysis" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname.startsWith('/ota-analysis') ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+            <Search size={20} />
+            <span className="font-medium">OTA Analysis</span>
+          </Link>
         </nav>
 
         <div className="p-6 bg-black/20 border-t border-white/5">
@@ -507,6 +642,7 @@ export default function App() {
           <Route path="/" element={<OverviewPage indexData={indexData} MOCK_AIRLINES={MOCK_AIRLINES} nationalCPI={nationalCPI} />} />
           <Route path="/route-analysis" element={<RouteAnalysisPage indexData={indexData} faresData={faresData} />} />
           <Route path="/raw-data" element={<DataPage faresData={faresData} />} />
+          <Route path="/ota-analysis" element={<OTAAnalysis faresData={faresData} />} />
         </Routes>
       </div>
     </div>

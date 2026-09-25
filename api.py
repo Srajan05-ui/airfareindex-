@@ -29,9 +29,13 @@ app = FastAPI(
     description="SIH26056 internal hackathon prototype. Not production-hardened.",
 )
 
+import os
+cors_origins_env = os.getenv("CORS_ORIGINS", "*")
+origins = cors_origins_env.split(",") if cors_origins_env != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -219,10 +223,6 @@ def latest_fares():
         return []
     return df.to_dict(orient="records")
 
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
 
 
 @app.get("/mock-airline/search")
