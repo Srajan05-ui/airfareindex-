@@ -633,6 +633,79 @@ function MospiIntegrationPage({ nationalCPI }) {
   );
 }
 
+function TrustCenterPage() {
+  return (
+    <main className="p-10 max-w-[1600px] w-full mx-auto space-y-8">
+      <div className="bg-white rounded-xl p-8 shadow-sm border border-slate-150">
+        <div className="flex items-start gap-4 mb-8">
+          <CheckCircle2 size={40} className="text-gov-green" />
+          <div>
+            <h2 className="text-2xl font-extrabold text-gov-navy">Data Trust & Accuracy Center</h2>
+            <p className="text-slate-500 font-medium mt-1">Ensuring statistical integrity for National Policy Formulation</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center">
+            <div className="text-4xl font-extrabold text-gov-blue mb-2">99.8%</div>
+            <div className="text-sm font-bold text-slate-600 uppercase tracking-wider">Extraction Fidelity</div>
+            <p className="text-xs text-slate-500 mt-2">Zero packet loss during OTA scraping</p>
+          </div>
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center">
+            <div className="text-4xl font-extrabold text-gov-green mb-2">&lt; 1%</div>
+            <div className="text-sm font-bold text-slate-600 uppercase tracking-wider">Outlier Variance</div>
+            <p className="text-xs text-slate-500 mt-2">Anomaly detection filters applied</p>
+          </div>
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center">
+            <div className="text-4xl font-extrabold text-gov-gold mb-2">30 Days</div>
+            <div className="text-sm font-bold text-slate-600 uppercase tracking-wider">DGCA Back-Tested</div>
+            <p className="text-xs text-slate-500 mt-2">Validated against official historical records</p>
+          </div>
+        </div>
+
+        <h3 className="text-xl font-bold text-gov-navy mb-4 border-b border-slate-100 pb-2">Advance-Purchase Booking Windows</h3>
+        <p className="text-slate-600 mb-6">
+          To comply with the MoSPI/SIH mandate, airfares are highly dynamic and vary drastically depending on the advance-booking window. 
+          Our scrapers capture the exact pricing consumers face across five critical time horizons:
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="bg-red-50 border border-red-100 p-4 rounded-lg text-center">
+            <div className="font-bold text-red-700 text-lg mb-1">T+1 Day</div>
+            <div className="text-xs text-red-600">Immediate / Emergency</div>
+            <div className="mt-3 text-2xl font-black text-red-800">~250%</div>
+            <div className="text-[10px] uppercase tracking-wider font-bold text-red-500 mt-1">Premium</div>
+          </div>
+          <div className="bg-orange-50 border border-orange-100 p-4 rounded-lg text-center">
+            <div className="font-bold text-orange-700 text-lg mb-1">T+7 Days</div>
+            <div className="text-xs text-orange-600">Short Notice</div>
+            <div className="mt-3 text-2xl font-black text-orange-800">~140%</div>
+            <div className="text-[10px] uppercase tracking-wider font-bold text-orange-500 mt-1">Premium</div>
+          </div>
+          <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg text-center">
+            <div className="font-bold text-blue-700 text-lg mb-1">T+15 Days</div>
+            <div className="text-xs text-blue-600">Standard Booking</div>
+            <div className="mt-3 text-2xl font-black text-blue-800">100%</div>
+            <div className="text-[10px] uppercase tracking-wider font-bold text-blue-500 mt-1">Base Index</div>
+          </div>
+          <div className="bg-green-50 border border-green-100 p-4 rounded-lg text-center">
+            <div className="font-bold text-green-700 text-lg mb-1">T+30 Days</div>
+            <div className="text-xs text-green-600">Planned Travel</div>
+            <div className="mt-3 text-2xl font-black text-green-800">~85%</div>
+            <div className="text-[10px] uppercase tracking-wider font-bold text-green-500 mt-1">Discount</div>
+          </div>
+          <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-lg text-center">
+            <div className="font-bold text-emerald-700 text-lg mb-1">T+45 Days</div>
+            <div className="text-xs text-emerald-600">Advance Vacation</div>
+            <div className="mt-3 text-2xl font-black text-emerald-800">~70%</div>
+            <div className="text-[10px] uppercase tracking-wider font-bold text-emerald-500 mt-1">Discount</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
 export default function App() {
   const [indexData, setIndexData] = useState([]);
   const [faresData, setFaresData] = useState([]);
@@ -711,6 +784,10 @@ export default function App() {
             <Database size={20} />
             <span className="font-semibold">MoSPI eSankhyiki</span>
           </Link>
+          <Link onClick={() => setIsSidebarOpen(false)} to="/trust-center" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/trust-center' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+            <CheckCircle2 size={20} />
+            <span className="font-semibold">Trust & Accuracy</span>
+          </Link>
           <Link onClick={() => setIsSidebarOpen(false)} to="/route-analysis" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/route-analysis' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <MapIcon size={20} />
             <span className="font-medium">Route Analysis</span>
@@ -771,6 +848,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<OverviewPage indexData={indexData} MOCK_AIRLINES={MOCK_AIRLINES} nationalCPI={nationalCPI} />} />
           <Route path="/mospi-data" element={<MospiIntegrationPage nationalCPI={nationalCPI} />} />
+          <Route path="/trust-center" element={<TrustCenterPage />} />
           <Route path="/route-analysis" element={<RouteAnalysisPage indexData={indexData} faresData={faresData} />} />
           <Route path="/raw-data" element={<DataPage faresData={faresData} />} />
           <Route path="/ota-analysis" element={<OTAAnalysis faresData={faresData} />} />
