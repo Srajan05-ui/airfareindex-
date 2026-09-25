@@ -85,6 +85,13 @@ def create_tables():
                 EXCEPTION WHEN others THEN NULL;
                 END $$;
             """))
+
+            # Automatically fix any legacy Vistara data in the database
+            try:
+                conn.execute(text("UPDATE fare_observations_clean SET airline = 'Air India Express' WHERE airline = 'Vistara'"))
+                conn.commit()
+            except Exception as e:
+                pass
             
             # Automatically seed airfare_index if table is empty
             index_count = conn.execute(text("SELECT COUNT(*) FROM airfare_index")).scalar()
