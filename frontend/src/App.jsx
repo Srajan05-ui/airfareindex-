@@ -539,7 +539,8 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || '/api';
+    // If VITE_API_URL is set (e.g. for Oracle or local), use it. Otherwise default to Render for Vercel.
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://airfareindex.onrender.com';
     console.log('[AirPrice] Connecting to API at:', apiUrl);
     
     Promise.all([
