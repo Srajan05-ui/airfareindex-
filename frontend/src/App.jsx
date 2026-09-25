@@ -682,7 +682,7 @@ export default function App() {
       <div className="w-72 bg-gov-navy text-white flex flex-col shadow-2xl relative z-20">
         <div className="p-8 text-center border-b border-white/10">
           <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Gov Logo" className="w-16 mx-auto mb-4 drop-shadow-md brightness-200 contrast-200 grayscale" style={{ filter: 'brightness(0) invert(1)'}} />
-          <h2 className="text-xl font-bold tracking-wider mb-1">AirPrice India</h2>
+          <h2 className="text-xl font-bold tracking-wider mb-1">Aerofare</h2>
           <p className="text-xs text-white/60 uppercase tracking-widest">National Airfare Monitor</p>
         </div>
         
@@ -736,7 +736,7 @@ export default function App() {
               </button>
             )}
             <div>
-              <h1 className="text-2xl font-extrabold text-gov-navy leading-tight">National Airfare Monitoring System</h1>
+              <h1 className="text-2xl font-extrabold text-gov-navy leading-tight">Aerofare : National Airfare Monitoring System</h1>
               <p className="text-sm text-slate-500 mt-1 font-medium">Directorate General of Civil Aviation (DGCA) | Ministry of Civil Aviation</p>
             </div>
           </div>
