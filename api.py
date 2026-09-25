@@ -105,7 +105,12 @@ def create_tables():
                     """), {"origin": r[0], "destination": r[1], "base_period": r[2], "index_value": r[3], "n_observations": r[4]})
 
             # Automatically seed fare observations if table is missing substantial data
-            fares_count = conn.execute(text("SELECT COUNT(*) FROM fare_observations_clean")).scalar()
+            fares_count = conn.execute(text("""
+                SELECT COUNT(*) FROM fare_observations_clean 
+                WHERE (is_duplicate = FALSE OR is_duplicate IS NULL) 
+                  AND (is_outlier = FALSE OR is_outlier IS NULL) 
+                  AND price IS NOT NULL
+            """)).scalar()
             if fares_count < 5:
                 print("Seeding missing fare_observations_clean data automatically...")
                 fares_seed = [
