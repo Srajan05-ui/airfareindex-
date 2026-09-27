@@ -65,6 +65,25 @@ def create_tables():
                     computed_at_utc TIMESTAMP DEFAULT NOW()
                 )
             """))
+            # Create fare_observations table (raw data)
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS fare_observations (
+                    id SERIAL PRIMARY KEY,
+                    observed_at_utc TIMESTAMP DEFAULT NOW(),
+                    source_tier VARCHAR(50),
+                    source_detail VARCHAR(100),
+                    origin VARCHAR(10),
+                    destination VARCHAR(10),
+                    departure_date VARCHAR(20),
+                    booking_window_days INTEGER,
+                    airline VARCHAR(100),
+                    fare_type VARCHAR(50),
+                    price FLOAT,
+                    currency VARCHAR(10) DEFAULT 'INR',
+                    is_price_band BOOLEAN DEFAULT FALSE,
+                    raw_ref VARCHAR(255)
+                )
+            """))
             # Create fare_observations_clean table
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS fare_observations_clean (
