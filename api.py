@@ -200,9 +200,9 @@ def health_check():
     """Lightweight endpoint for UptimeRobot to keep the Render server awake."""
     return {"status": "ok", "service": "airfare-api"}
 
-@app.post("/seed")
-def seed_sample_data():
-    """Seed the database with sample data for testing. Call once after deployment."""
+@app.get("/refresh-presentation-data")
+def refresh_demo_data():
+    """Wipe and re-seed the database with today's timestamps for presentation."""
     engine = get_engine()
     sample_index = [
         ("DEL", "BOM", "2024-Q1", 115.2, 420),
@@ -230,22 +230,25 @@ def seed_sample_data():
     ]
     try:
         with engine.connect() as conn:
-            # Insert index data
+            # Wipe existing tables safely
+            conn.execute(text("DELETE FROM airfare_index"))
+            conn.execute(text("DELETE FROM fare_observations_clean"))
+            
+            # Insert index data with NOW()
             for row in sample_index:
                 conn.execute(text("""
-                    INSERT INTO airfare_index (origin, destination, base_period, index_value, n_observations)
-                    VALUES (:origin, :destination, :base_period, :index_value, :n_observations)
-                    ON CONFLICT DO NOTHING
+                    INSERT INTO airfare_index (origin, destination, base_period, index_value, n_observations, computed_at_utc)
+                    VALUES (:origin, :destination, :base_period, :index_value, :n_observations, NOW())
                 """), {"origin": row[0], "destination": row[1], "base_period": row[2],
                        "index_value": row[3], "n_observations": row[4]})
-            # Insert fare observations
+            # Insert fare observations with NOW()
             for row in sample_fares:
                 conn.execute(text("""
-                    INSERT INTO fare_observations_clean (airline, origin, destination, price)
-                    VALUES (:airline, :origin, :destination, :price)
+                    INSERT INTO fare_observations_clean (airline, origin, destination, price, observed_at_utc, is_duplicate, is_outlier)
+                    VALUES (:airline, :origin, :destination, :price, NOW(), FALSE, FALSE)
                 """), {"airline": row[0], "origin": row[1], "destination": row[2], "price": row[3]})
             conn.commit()
-        return {"status": "seeded", "index_rows": len(sample_index), "fare_rows": len(sample_fares)}
+        return {"status": "success", "message": "Presentation data successfully updated to TODAY!"}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
 
