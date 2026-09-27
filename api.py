@@ -252,6 +252,33 @@ def refresh_demo_data():
     except Exception as e:
         return {"status": "error", "detail": str(e)}
 
+@app.get("/run-scraper-live")
+def run_scraper_live():
+    """Trigger the real web scraper (Tier 1 - no browser required) to fetch live data right now."""
+    import threading
+    import subprocess
+    
+    def scrape_job():
+        print("Starting LIVE scrape job...")
+        try:
+            # Run Tier 1 (Google Flights - fast HTTP scraper that won't crash the server's RAM)
+            subprocess.run(["python", "collector_tier1.py"], check=False)
+            print("Tier 1 scrape complete. Calculating Index...")
+            # Run the index calculator to update the CPI table
+            subprocess.run(["python", "index_calc.py"], check=False)
+            print("Index calculation complete. Live data is ready!")
+        except Exception as e:
+            print(f"Scrape job failed: {e}")
+
+    # Run in background thread so the HTTP request returns instantly
+    t = threading.Thread(target=scrape_job)
+    t.start()
+    
+    return {
+        "status": "success", 
+        "message": "Real-time Scraper Engine started! It is actively pulling LIVE data from Google Flights. Wait 60 seconds and refresh the frontend dashboard."
+    }
+
 @app.get("/index/latest", response_model=list[IndexPoint])
 def latest_index():
     engine = get_engine()
