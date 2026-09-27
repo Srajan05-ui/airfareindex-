@@ -57,6 +57,25 @@ const getCPIColor = (cpi) => {
   return '#1E3A8A';                // Blue
 };
 
+const LiveClock = ({ format = 'time-only' }) => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  if (format === 'time-only') {
+    return <span>{time.toLocaleTimeString('en-IN', { hour12: false })} IST</span>;
+  }
+  
+  if (format === 'date-only') {
+    return <span>Data as of <b className="font-bold text-slate-800">{time.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</b></span>;
+  }
+  
+  return <span>Updated: {time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>;
+};
+
 const getStatusText = (cpi) => {
   if (cpi > 110) return 'Critical';
   if (cpi > 105) return 'Warning';
@@ -718,11 +737,11 @@ function BookingWindowAnalysisPage() {
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm">
             <Clock size={14} className="text-slate-400" />
-            <span>12:18:01 IST</span>
+            <LiveClock format="time-only" />
           </div>
           <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm">
             <Calendar size={14} className="text-slate-400" />
-            <span>Data as of <b className="font-bold text-slate-800">04 Sept 2026</b></span>
+            <LiveClock format="date-only" />
           </div>
           <button className="bg-white p-2 rounded-full border border-slate-200 shadow-sm text-slate-500 hover:text-slate-700">
             <Search size={16} />
@@ -1123,7 +1142,7 @@ export default function App() {
           </div>
           <div className="flex items-center space-x-2 text-sm mt-3 text-white/70">
             <Clock size={16} />
-            <span>Updated: {new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+            <LiveClock format="updated" />
           </div>
         </div>
       </div>
