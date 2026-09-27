@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Polyline, CircleMarker, Tooltip } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { Activity, Map as MapIcon, Plane, TrendingUp, AlertTriangle, CheckCircle2, ServerCrash, Clock, ChevronLeft, Database, Search, Table, Menu, X } from 'lucide-react';
+import { Activity, Map as MapIcon, Plane, TrendingUp, AlertTriangle, CheckCircle2, ServerCrash, Clock, ChevronLeft, Database, Search, Table, Menu, X, Calendar, Moon, Bell, Code, RefreshCw, BarChart2 } from 'lucide-react';
 import L from 'leaflet';
 
 const CITY_COORDS = {
@@ -706,6 +706,313 @@ function TrustCenterPage() {
   );
 }
 
+function BookingWindowAnalysisPage() {
+  return (
+    <main className="p-4 md:p-10 w-full mx-auto space-y-6">
+      {/* Top Header controls matching design */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-gov-navy">Booking Window Analysis</h2>
+          <p className="text-sm text-slate-500 font-medium">Advance-purchase horizons, yield curve & day-of-week dynamics.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm">
+            <Clock size={14} className="text-slate-400" />
+            <span>12:18:01 IST</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm">
+            <Calendar size={14} className="text-slate-400" />
+            <span>Data as of <b className="font-bold text-slate-800">04 Sept 2026</b></span>
+          </div>
+          <button className="bg-white p-2 rounded-full border border-slate-200 shadow-sm text-slate-500 hover:text-slate-700">
+            <Search size={16} />
+          </button>
+          <button className="bg-white p-2 rounded-full border border-slate-200 shadow-sm text-slate-500 hover:text-slate-700">
+            <Moon size={16} />
+          </button>
+          <div className="flex items-center space-x-1.5 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 text-xs font-bold text-emerald-600 shadow-sm">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span>LIVE</span>
+          </div>
+          <div className="relative">
+            <button className="bg-white p-2 rounded-full border border-slate-200 shadow-sm text-slate-500 hover:text-slate-700">
+              <Bell size={16} />
+            </button>
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">1</span>
+          </div>
+          <button className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-sm transition-colors">
+            <Code size={14} />
+            <span>API Access</span>
+          </button>
+          <button className="bg-indigo-800 hover:bg-indigo-900 text-white w-8 h-8 rounded-full text-xs font-bold shadow-sm flex items-center justify-center transition-colors">
+            VS
+          </button>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center space-x-2 bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-[11px] font-bold border border-cyan-100">
+          <Calendar size={12} />
+          <span>elasticity + temporal engine</span>
+        </div>
+        <button className="flex items-center space-x-2 bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-slate-50">
+          <RefreshCw size={14} />
+          <span>Refresh</span>
+        </button>
+      </div>
+
+      {/* T+ Cards */}
+      <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h3 className="text-lg font-bold text-gov-navy flex items-center gap-2">
+              <BarChart2 size={20} className="text-indigo-500" /> Airfare by booking window
+            </h3>
+            <p className="text-xs text-slate-400 mt-1">National average fare by advance horizon — click-through weight structure</p>
+          </div>
+          <div className="bg-red-50 text-red-600 border border-red-100 px-3 py-1 rounded-full text-xs font-bold">
+            Priciest: T + 1
+          </div>
+        </div>
+
+        <div className="grid grid-cols-5 gap-4 mt-10 h-48 items-end border-b border-slate-100 pb-2">
+          {/* T+1 */}
+          <div className="flex flex-col items-center w-full h-[95%] justify-end">
+            <span className="text-sm font-bold text-red-600 mb-2">₹13,794</span>
+            <div className="w-[85%] bg-gradient-to-b from-red-500 to-red-600 rounded-t-xl shadow-inner h-full"></div>
+          </div>
+          {/* T+7 */}
+          <div className="flex flex-col items-center w-full h-[75%] justify-end">
+            <span className="text-sm font-bold text-slate-700 mb-2">₹10,444</span>
+            <div className="w-[85%] bg-gradient-to-b from-[#df932e] to-[#cd8529] rounded-t-xl shadow-inner h-full"></div>
+          </div>
+          {/* T+15 */}
+          <div className="flex flex-col items-center w-full h-[47%] justify-end">
+            <span className="text-sm font-bold text-slate-700 mb-2">₹6,542</span>
+            <div className="w-[85%] bg-gradient-to-b from-[#6f67ec] to-[#6059d9] rounded-t-xl shadow-inner h-full"></div>
+          </div>
+          {/* T+30 */}
+          <div className="flex flex-col items-center w-full h-[49%] justify-end">
+            <span className="text-sm font-bold text-slate-700 mb-2">₹6,844</span>
+            <div className="w-[85%] bg-gradient-to-b from-[#6f67ec] to-[#6059d9] rounded-t-xl shadow-inner h-full"></div>
+          </div>
+          {/* T+45 */}
+          <div className="flex flex-col items-center w-full h-[40%] justify-end">
+            <span className="text-sm font-bold text-slate-700 mb-2">₹5,512</span>
+            <div className="w-[85%] bg-gradient-to-b from-[#6f67ec] to-[#6059d9] rounded-t-xl shadow-inner h-full"></div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-5 gap-4 mt-3 text-center">
+          <div>
+            <div className="text-sm font-black text-slate-800">T + 1</div>
+            <div className="text-[10px] text-slate-500 font-medium mt-1">Spot / Emergency</div>
+            <div className="text-[10px] text-slate-400">wt 22%</div>
+          </div>
+          <div>
+            <div className="text-sm font-black text-slate-800">T + 7</div>
+            <div className="text-[10px] text-slate-500 font-medium mt-1">Urgent Business</div>
+            <div className="text-[10px] text-slate-400">wt 34%</div>
+          </div>
+          <div>
+            <div className="text-sm font-black text-slate-800">T + 15</div>
+            <div className="text-[10px] text-slate-500 font-medium mt-1">Standard Planned</div>
+            <div className="text-[10px] text-slate-400">wt 24%</div>
+          </div>
+          <div>
+            <div className="text-sm font-black text-slate-800">T + 30</div>
+            <div className="text-[10px] text-slate-500 font-medium mt-1">Planned Leisure</div>
+            <div className="text-[10px] text-slate-400">wt 14%</div>
+          </div>
+          <div>
+            <div className="text-sm font-black text-slate-800">T + 45</div>
+            <div className="text-[10px] text-slate-500 font-medium mt-1">Early Bird</div>
+            <div className="text-[10px] text-slate-400">wt 6%</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-5 gap-4">
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">T+1 SUB-INDEX • SPOT / EMERGENCY</div>
+          <div className="text-2xl font-black text-slate-800">110.19</div>
+          <div className="text-[10px] text-slate-500 mt-1">92 cells • ₹13,794 avg</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">T+7 SUB-INDEX • URGENT BUSINESS</div>
+          <div className="text-2xl font-black text-slate-800">124.04</div>
+          <div className="text-[10px] text-slate-500 mt-1">92 cells • ₹10,444 avg</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">T+15 SUB-INDEX • STANDARD PLANNED</div>
+          <div className="text-2xl font-black text-slate-800">102.47</div>
+          <div className="text-[10px] text-slate-500 mt-1">95 cells • ₹6,542 avg</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">T+30 SUB-INDEX • PLANNED LEISURE</div>
+          <div className="text-2xl font-black text-slate-800">124</div>
+          <div className="text-[10px] text-slate-500 mt-1">94 cells • ₹6,844 avg</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">T+45 SUB-INDEX • EARLY BIRD</div>
+          <div className="text-2xl font-black text-slate-800">107.46</div>
+          <div className="text-[10px] text-slate-500 mt-1">110 cells • ₹5,512 avg</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        {/* Day-of-week */}
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-1">
+            <Activity size={18} className="text-indigo-500" /> Day-of-week fare dynamics
+          </h3>
+          <p className="text-[10px] text-slate-400 mb-6 leading-tight">
+            empirical multipliers • p &lt; 0.001 (ANOVA F-test across Day-of-Week and Booking Horizons validated on 35-day panel)
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex items-center text-sm">
+              <div className="w-24 font-bold text-slate-800 text-xs">Monday</div>
+              <div className="flex-1 text-slate-400 text-xs">Morning Business Travel Surge</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[65%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">+5.0%</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-24 font-bold text-slate-800 text-xs">Tuesday</div>
+              <div className="flex-1 text-slate-400 text-xs">Mid-Week Low Demand Trough</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-emerald-600 h-full w-[35%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">-9.0%</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-24 font-bold text-slate-800 text-xs">Wednesday</div>
+              <div className="flex-1 text-slate-400 text-xs">Mid-Week Low Demand Trough</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-emerald-600 h-full w-[40%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">-8.0%</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-24 font-bold text-slate-800 text-xs">Thursday</div>
+              <div className="flex-1 text-slate-400 text-xs">Pre-Weekend Neutral Base</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[50%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">+1.0%</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-24 font-bold text-slate-800 text-xs">Friday</div>
+              <div className="flex-1 text-slate-400 text-xs">Friday Evening Weekend Outbound Surge</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[100%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">+20.0%</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-24 font-bold text-slate-800 text-xs">Saturday</div>
+              <div className="flex-1 text-slate-400 text-xs">Weekend Leisure Departures</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[55%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">+3.0%</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-24 font-bold text-slate-800 text-xs">Sunday</div>
+              <div className="flex-1 text-slate-400 text-xs">Sunday Evening Return Peak Surge</div>
+              <div className="w-24 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[95%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">+24.0%</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Yield Curve & Seasonality */}
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col">
+          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-1">
+            <PieChart size={18} className="text-indigo-500" /> Advance booking yield curve
+          </h3>
+          <p className="text-[10px] text-slate-400 mb-6 lowercase">
+            average multiplier over base fare
+          </p>
+
+          <div className="space-y-4 mb-8">
+            <div className="flex items-center text-sm">
+              <div className="w-16 font-black text-slate-800 text-xs">T + 1</div>
+              <div className="flex-1 text-slate-400 text-xs">Spot Emergency (&lt;24h)</div>
+              <div className="w-32 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[90%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">2.58×</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-16 font-black text-slate-800 text-xs">T + 7</div>
+              <div className="flex-1 text-slate-400 text-xs">Urgent Corporate (7d)</div>
+              <div className="w-32 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-red-600 h-full w-[60%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">1.65×</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-16 font-black text-slate-800 text-xs">T + 15</div>
+              <div className="flex-1 text-slate-400 text-xs">Standard Planned (15d)</div>
+              <div className="w-32 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-orange-500 h-full w-[40%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">1.19×</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-16 font-black text-slate-800 text-xs">T + 30</div>
+              <div className="flex-1 text-slate-400 text-xs">Planned Leisure (30d)</div>
+              <div className="w-32 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-emerald-600 h-full w-[35%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">1.01×</div>
+            </div>
+            <div className="flex items-center text-sm border-t border-slate-50 pt-4">
+              <div className="w-16 font-black text-slate-800 text-xs">T + 45</div>
+              <div className="flex-1 text-slate-400 text-xs">Early Bird Promo (45d)</div>
+              <div className="w-32 bg-slate-100 h-1.5 rounded-full mx-4 overflow-hidden flex">
+                <div className="bg-emerald-600 h-full w-[30%]"></div>
+              </div>
+              <div className="w-12 text-right font-bold text-slate-800 text-xs">0.92×</div>
+            </div>
+          </div>
+
+          <h4 className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-3">Seasonal Factors</h4>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="border border-slate-100 rounded-lg p-3 bg-slate-50">
+              <div className="text-[10px] font-bold text-slate-400 mb-1">Q1 (JAN-MAR)</div>
+              <div className="text-lg font-black text-slate-800">0.98×</div>
+              <div className="text-[10px] text-slate-500 mt-1">Moderate / Neutral</div>
+            </div>
+            <div className="border border-slate-100 rounded-lg p-3 bg-slate-50">
+              <div className="text-[10px] font-bold text-slate-400 mb-1">Q2 (APR-JUN)</div>
+              <div className="text-lg font-black text-slate-800">1.14×</div>
+              <div className="text-[10px] text-slate-500 mt-1">Elevated Inflation Pressure</div>
+            </div>
+            <div className="border border-slate-100 rounded-lg p-3 bg-slate-50">
+              <div className="text-[10px] font-bold text-slate-400 mb-1">Q3 (JUL-SEP)</div>
+              <div className="text-lg font-black text-slate-800">0.92×</div>
+              <div className="text-[10px] text-slate-500 mt-1">Disinflationary Cooling</div>
+            </div>
+            <div className="border border-slate-100 rounded-lg p-3 bg-slate-50 col-span-3 mt-1 flex justify-between items-center">
+              <div>
+                <div className="text-[10px] font-bold text-slate-400 mb-0.5">Q4 (OCT-DEC)</div>
+                <div className="text-[10px] text-red-600 font-medium">Critical Inflation Surge</div>
+              </div>
+              <div className="text-xl font-black text-slate-800">1.22×</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
 export default function App() {
   const [indexData, setIndexData] = useState([]);
   const [faresData, setFaresData] = useState([]);
@@ -792,6 +1099,10 @@ export default function App() {
             <MapIcon size={20} />
             <span className="font-medium">Route Analysis</span>
           </Link>
+          <Link onClick={() => setIsSidebarOpen(false)} to="/booking-window" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/booking-window' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
+            <Calendar size={20} />
+            <span className="font-medium">Booking Window</span>
+          </Link>
           <Link onClick={() => setIsSidebarOpen(false)} to="/raw-data" className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors border-l-4 ${location.pathname === '/raw-data' ? 'bg-white/10 text-gov-gold border-gov-gold' : 'text-white/70 hover:bg-white/5 hover:text-white border-transparent'}`}>
             <Table size={20} />
             <span className="font-medium">Raw Data Explorer</span>
@@ -850,6 +1161,7 @@ export default function App() {
           <Route path="/mospi-data" element={<MospiIntegrationPage nationalCPI={nationalCPI} />} />
           <Route path="/trust-center" element={<TrustCenterPage />} />
           <Route path="/route-analysis" element={<RouteAnalysisPage indexData={indexData} faresData={faresData} />} />
+          <Route path="/booking-window" element={<BookingWindowAnalysisPage />} />
           <Route path="/raw-data" element={<DataPage faresData={faresData} />} />
           <Route path="/ota-analysis" element={<OTAAnalysis faresData={faresData} />} />
         </Routes>
