@@ -282,7 +282,10 @@ def run_scraper_live():
         try:
             # Run Tier 1 (Google Flights - fast HTTP scraper that won't crash the server's RAM)
             subprocess.run(["python", "collector_tier1.py"], check=False)
-            print("Tier 1 scrape complete. Calculating Index...")
+            print("Tier 1 scrape complete. Cleaning data...")
+            # Run anomaly detection/cleaning
+            subprocess.run(["python", "cleaning.py"], check=False)
+            print("Cleaning complete. Calculating Index...")
             # Run the index calculator to update the CPI table
             subprocess.run(["python", "index_calc.py"], check=False)
             print("Index calculation complete. Live data is ready!")
